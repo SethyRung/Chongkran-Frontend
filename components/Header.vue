@@ -13,7 +13,13 @@
       :items="navigationItems"
       class="w-fit mx-auto hidden @md/header:flex"
     />
-    <UPopover v-if="isAuthenticated">
+    <UDropdownMenu
+      v-if="isAuthenticated"
+      :items="profileItems"
+      :ui="{
+        content: 'w-40',
+      }"
+    >
       <UButton
         icon="i-lucide-user"
         size="lg"
@@ -21,20 +27,7 @@
         variant="soft"
         class="rounded-full hidden @md/header:inline-flex"
       />
-
-      <template #content>
-        <div class="w-40">
-          <UNavigationMenu
-            :items="profileItems"
-            orientation="vertical"
-            :ui="{
-              item: 'not-last:border-b border-gray-300',
-              link: 'h-10 bg-white',
-            }"
-          />
-        </div>
-      </template>
-    </UPopover>
+    </UDropdownMenu>
     <UButton
       v-else
       label="Sign in"
@@ -82,16 +75,18 @@
 </template>
 
 <script lang="ts" setup>
-import type { NavigationMenuItem } from "@nuxt/ui";
+import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
 
-const isAuthenticated = ref(false);
+const isAuthenticated = ref(true);
 const isOpen = ref<boolean>(false);
 
-const profileItems = reactive<NavigationMenuItem[]>([
-  { icon: "i-lucide-user", label: "Your Profile", to: "/profile" },
-  { icon: "i-lucide-heart", label: "Favorites", to: "/favorites" },
-  { icon: "i-lucide-user-pen", label: "Become Author", to: "/become-author" },
-  { icon: "i-lucide-log-out", label: "Logout" },
+const profileItems = reactive<DropdownMenuItem[] | DropdownMenuItem[][]>([
+  [
+    { icon: "i-lucide-user", label: "Your Profile", to: "/profile" },
+    { icon: "i-lucide-heart", label: "Favorites", to: "/favorites" },
+    { icon: "i-lucide-user-pen", label: "Become Author", to: "/become-author" },
+  ],
+  [{ icon: "i-lucide-log-out", label: "Logout" }],
 ]);
 
 const navigationItems = reactive<NavigationMenuItem[]>([
@@ -118,7 +113,7 @@ const items = reactive([
     ? {
         icon: "i-lucide-user",
         label: "Profile",
-        children: profileItems,
+        children: profileItems.flatMap((item) => item),
       }
     : {},
 ]);
