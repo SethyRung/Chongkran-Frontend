@@ -32,40 +32,18 @@
       </div>
     </div>
 
-    <div class="flex flex-wrap justify-center gap-4">
-      <div
+    <div class="grid grid-cols-[repeat(auto-fit,_minmax(288px,_1fr))] gap-4">
+      <RecipeCard
         v-for="recipe in allRecipes"
         :key="recipe.id"
-        class="group relative w-full max-w-2xs p-6 flex flex-col gap-3 justify-between bg-white border border-gray-200 rounded-lg shadow-sm hover:border-orange-400 transition-all"
-      >
-        <div class="space-y-3">
-          <NuxtImg
-            :src="recipe.img"
-            class="w-full h-60 object-cover rounded group-hover:scale-105 transition-all"
-          />
-          <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-            {{ recipe.name }}
-          </h5>
-          <UBadge :label="recipe.type" variant="soft" color="primary" />
-        </div>
-        <div class="flex gap-1">
-          <UButton
-            icon="i-lucide-eye"
-            label="See Complete Recipe"
-            block
-            :to="`recipes/${recipe.id}`"
-          />
-          <UButton
-            icon="i-lucide-heart"
-            variant="subtle"
-            :color="recipe.isFavorite ? 'primary' : 'neutral'"
-          />
-        </div>
-      </div>
+        :recipe="recipe"
+      />
     </div>
   </div>
 </template>
 <script setup lang="ts">
+import type { Recipe } from "~/types/Recipe";
+
 const foodTypes = ref<string[]>([
   "All Types",
   "Appetizers",
@@ -79,9 +57,7 @@ const foodTypes = ref<string[]>([
 ]);
 const selectedFoodType = ref<string>("All Types");
 
-const allRecipes = ref<
-  { id: string; img: string; name: string; type: string; isFavorite: boolean }[]
->([
+const allRecipes = ref<Recipe[]>([
   {
     id: "1",
     img: "/images/aubergine-and-sesame-noodles.jpg",
