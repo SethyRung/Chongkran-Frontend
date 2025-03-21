@@ -1,7 +1,13 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
-  modules: ["@nuxt/ui", "@nuxt/eslint", "@nuxt/image", "@vueuse/nuxt"],
+  modules: [
+    "@nuxt/ui",
+    "@nuxt/eslint",
+    "@nuxt/image",
+    "@vueuse/nuxt",
+    "@vueuse/motion/nuxt",
+  ],
 
   css: ["~/assets/css/main.css", "~/assets/css/tailwind.css"],
 
