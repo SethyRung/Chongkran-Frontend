@@ -2,18 +2,18 @@
   <div class="p-4 md:px-12 lg:px-20 space-y-8">
     <div class="relative h-40 overflow-hidden">
       <div
-        class="absolute -z-10 w-full h-full rounded-2xl bg-gradient-to-r from-gray-100 to-orange-100"
+        class="absolute -z-10 w-full h-full rounded-2xl bg-gradient-to-r from-gray-100 to-primary-200"
       ></div>
       <div class="h-full pl-4 md:pl-12 flex justify-between items-center gap-4">
         <h2 class="font-semibold text-xl md:text-2xl text-black">
-          Explore <br /><span class="text-orange-400">Culinary</span> Insights
+          Explore <br /><span class="text-primary-500">Culinary</span> Insights
         </h2>
         <NuxtImg src="/images/banner.png" />
       </div>
     </div>
     <div class="max-w-[800px] mx-auto space-y-4">
       <h3 class="text-xl font-semibold text-center">
-        What to <span class="text-orange-400">Cook</span>?
+        What to <span class="text-primary-500">Cook</span>?
       </h3>
       <div class="flex flex-wrap justify-center gap-2">
         <UBadge

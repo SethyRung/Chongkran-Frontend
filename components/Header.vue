@@ -5,7 +5,7 @@
   >
     <NuxtLink
       to="/"
-      class="font-bold text-orange-400 flex items-center gap-1.5"
+      class="font-bold text-primary-500 flex items-center gap-1.5"
     >
       <UIcon name="i-lucide-cooking-pot" size="24" /> Chongkran
     </NuxtLink>
@@ -48,7 +48,7 @@
       <template #title>
         <NuxtLink
           to="/"
-          class="font-bold text-orange-400 flex items-center gap-1.5"
+          class="font-bold text-primary-500 flex items-center gap-1.5"
         >
           <UIcon name="i-lucide-cooking-pot" size="24" /> Chongkran
         </NuxtLink>

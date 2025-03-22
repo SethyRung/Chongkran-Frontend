@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group relative w-full p-6 flex flex-col gap-3 justify-between bg-white border border-gray-200 rounded-lg shadow-sm hover:border-orange-400 transition-all"
+    class="group relative w-full p-6 flex flex-col gap-3 justify-between bg-white border border-gray-200 rounded-lg shadow-sm hover:border-primary-500 transition-all"
   >
     <div class="space-y-3">
       <NuxtImg
