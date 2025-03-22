@@ -1,7 +1,7 @@
 <template>
   <div class="p-4 md:px-12 lg:px-20 space-y-8">
     <div
-      class="relative md:h-[500px] p-4 md:p-12 rounded-2xl flex justify-between items-center gap-4 bg-[url('/images/hero.jpg')] bg-cover bg-right"
+      class="relative md:h-[500px] p-4 md:p-12 rounded-2xl overflow-hidden flex justify-between items-center gap-4 bg-[url('/images/hero.jpg')] bg-cover bg-right"
     >
       <div class="absolute inset-0 bg-gray-50/50"></div>
       <div
@@ -14,7 +14,7 @@
         </h2>
         <p class="max-w-lg text-xl">
           Unlock a world of variety culinary recipes and unleash your inner chef
-          the easy way with Chongkran.
+          the easy way with <span class="text-primary-500">Chongkran</span>.
         </p>
         <UButton
           trailing-icon="i-lucide-chef-hat"
@@ -82,7 +82,9 @@
           We are a home to variety of recipes worldwide for you to learn.
         </p>
       </div>
-      <div class="flex flex-wrap justify-center items-end gap-6">
+      <div
+        class="overflow-hidden flex flex-wrap justify-center items-end gap-6"
+      >
         <div
           v-motion-slide-visible-once-top
           :delay="200"

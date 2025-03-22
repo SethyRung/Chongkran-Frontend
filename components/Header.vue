@@ -1,6 +1,5 @@
 <template>
   <header
-    ref="header"
     class="h-14 px-4 md:px-12 lg:px-20 sticky top-0 z-[99999] @container/header flex items-center justify-between bg-white/80 shadow-sm backdrop-blur-lg"
   >
     <NuxtLink
