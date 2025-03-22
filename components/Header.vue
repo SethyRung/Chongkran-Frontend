@@ -1,11 +1,10 @@
 <template>
   <header
-    ref="header"
     class="h-14 px-4 md:px-12 lg:px-20 sticky top-0 z-[99999] @container/header flex items-center justify-between bg-white/80 shadow-sm backdrop-blur-lg"
   >
     <NuxtLink
       to="/"
-      class="font-bold text-orange-400 flex items-center gap-1.5"
+      class="font-bold text-primary-500 flex items-center gap-1.5"
     >
       <UIcon name="i-lucide-cooking-pot" size="24" /> Chongkran
     </NuxtLink>
@@ -48,7 +47,7 @@
       <template #title>
         <NuxtLink
           to="/"
-          class="font-bold text-orange-400 flex items-center gap-1.5"
+          class="font-bold text-primary-500 flex items-center gap-1.5"
         >
           <UIcon name="i-lucide-cooking-pot" size="24" /> Chongkran
         </NuxtLink>
@@ -79,6 +78,11 @@ import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
 
 const isAuthenticated = ref(true);
 const isOpen = ref<boolean>(false);
+
+const route = useRoute();
+watch(route, () => {
+  isOpen.value = false;
+});
 
 const profileItems = reactive<DropdownMenuItem[] | DropdownMenuItem[][]>([
   [

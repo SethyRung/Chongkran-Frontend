@@ -9,6 +9,10 @@ export default defineNuxtConfig({
     "@vueuse/motion/nuxt",
   ],
 
+  app: {
+    pageTransition: { name: "page", mode: "out-in" },
+  },
+
   css: ["~/assets/css/main.css", "~/assets/css/tailwind.css"],
 
   future: {

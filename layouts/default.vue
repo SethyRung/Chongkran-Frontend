@@ -2,6 +2,7 @@
   <div class="font-sans">
     <Header />
     <slot></slot>
+    <Footer />
   </div>
 </template>
 
