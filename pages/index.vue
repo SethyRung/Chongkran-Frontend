@@ -26,6 +26,52 @@
         />
       </div>
     </div>
+    <div
+      class="p-6 rounded-2xl bg-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-10"
+    >
+      <div>
+        <div class="size-8 mb-4 rounded-full bg-white relative">
+          <UIcon
+            name="i-lucide-user"
+            class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
+            size="20"
+          />
+        </div>
+        <h3 class="font-bold mb-1">User-Centered</h3>
+        <p>
+          Your feedback shapes our platform, ensuring a seamless and satisfying
+          culinary journey.
+        </p>
+      </div>
+      <div>
+        <div class="size-8 mb-4 rounded-full bg-white relative">
+          <UIcon
+            name="i-lucide-contrast"
+            class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
+            size="20"
+          />
+        </div>
+        <h3 class="font-bold mb-1">Diverse Recipes</h3>
+        <p>
+          We celebrate diverse culinary traditions from around the world,
+          inspiring you today.
+        </p>
+      </div>
+      <div>
+        <div class="size-8 mb-4 rounded-full bg-white relative">
+          <UIcon
+            name="i-lucide-heart"
+            class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
+            size="20"
+          />
+        </div>
+        <h3 class="font-bold mb-1">Fun Community</h3>
+        <p>
+          We foster a vibrant foodie community where joy comes with sharing
+          recipes with us.
+        </p>
+      </div>
+    </div>
     <div>
       <div class="max-w-96 mx-auto mt-14 mb-8 space-y-3">
         <h2 class="font-bold text-3xl text-center">

@@ -80,6 +80,11 @@ import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
 const isAuthenticated = ref(true);
 const isOpen = ref<boolean>(false);
 
+const route = useRoute();
+watch(route, () => {
+  isOpen.value = false;
+});
+
 const profileItems = reactive<DropdownMenuItem[] | DropdownMenuItem[][]>([
   [
     { icon: "i-lucide-user", label: "Your Profile", to: "/profile" },
