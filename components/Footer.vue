@@ -1,6 +1,6 @@
 <template>
   <footer
-    class="px-8 py-6 mx-4 md:mx-12 lg:mx-20 rounded-2xl grid grid-cols-1 lg:grid-cols-2 gap-10 bg-stone-900 text-white"
+    class="px-8 py-6 mx-4 md:mx-12 lg:mx-20 rounded-t-2xl grid grid-cols-1 lg:grid-cols-2 gap-10 bg-stone-900 text-white"
   >
     <div class="space-y-5">
       <h1 class="text-4xl font-semibold">
