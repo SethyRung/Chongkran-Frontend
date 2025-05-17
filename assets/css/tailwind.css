@@ -3,6 +3,7 @@
 
 @theme static {
   --font-sans: "Public Sans", sans-serif;
+
   --color-primary-50: #fff6eb;
   --color-primary-100: #fff9ed;
   --color-primary-200: #fff2d4;
@@ -14,4 +15,6 @@
   --color-primary-800: #c75607;
   --color-primary-900: #9e430e;
   --color-primary-950: #7f390f;
+  
+  --breakpoint-xs: 30rem;
 }
