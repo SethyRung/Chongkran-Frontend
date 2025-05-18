@@ -11,23 +11,54 @@
         <NuxtImg src="/images/banner.png" />
       </div>
     </div>
-    <div class="max-w-[800px] mx-auto space-y-4">
+    <div class="space-y-4">
       <h3 class="text-xl font-semibold text-center">
         What to <span class="text-primary-500">Cook</span>?
       </h3>
-      <div class="flex flex-wrap justify-center gap-2">
-        <UBadge
-          v-for="type in foodTypes"
-          :key="type"
-          :label="type"
-          variant="soft"
-          :color="selectedFoodType === type ? 'primary' : 'neutral'"
-          class="rounded-full hover:cursor-pointer"
-          @click="
-            () => {
-              selectedFoodType = type;
-            }
-          "
+      <div class="flex flex-col xs:flex-row-reverse justify-between gap-2">
+        <UInput
+          v-model="search"
+          placeholder="Search"
+          size="lg"
+          :ui="{ trailing: 'pr-0.5', root: 'w-full xs:max-w-72' }"
+        >
+          <template #trailing>
+            <UButton color="neutral" variant="ghost" icon="i-lucide-search" />
+          </template>
+        </UInput>
+        <UTabs
+          v-model="selectedTab"
+          :content="false"
+          :items="tabOptions"
+          variant="link"
+          size="xl"
+          :ui="{ list: 'border-none', trigger: 'text-black' }"
+        />
+      </div>
+      <div class="flex items-center justify-between gap-3 text-xs">
+        <UPopover :content="{ side: 'right', align: 'start' }">
+          <UButton
+            label="Filters"
+            icon="i-lucide-list-filter"
+            size="sm"
+            variant="ghost"
+            color="neutral"
+          />
+          <template #content>
+            <UCommandPalette
+              multiple
+              placeholder="Search category..."
+              :groups="[{ id: 'labels', items: filterOptions }]"
+              :ui="{ input: '[&>input]:h-8 [&>input]:text-sm' }"
+            />
+          </template>
+        </UPopover>
+        <USelect
+          :items="sortOptions"
+          default-value="Date"
+          variant="ghost"
+          size="sm"
+          class="w-20"
         />
       </div>
     </div>
@@ -51,20 +82,30 @@
   </div>
 </template>
 <script setup lang="ts">
+import type { CommandPaletteItem, TabsItem } from "@nuxt/ui";
 import type { Recipe } from "~/types/Recipe";
 
-const foodTypes = ref<string[]>([
-  "All Types",
-  "Appetizers",
-  "Main Courses",
-  "Salads & Sides",
-  "Vegetarian Delights",
-  "International Flavors",
-  "Desserts & Sweets",
-  "Healthy Eats",
-  "Quick & Easy Supper",
+const search = ref<string>();
+
+const tabOptions = ref<TabsItem[]>([
+  {
+    label: "All",
+    value: "all",
+  },
+  {
+    label: "Favorites",
+    value: "favorites",
+  },
 ]);
-const selectedFoodType = ref<string>("All Types");
+
+const selectedTab = ref<string>("all");
+
+const sortOptions = ref(["Date", "Name"]);
+
+const filterOptions = ref<CommandPaletteItem[]>([
+  { label: "Vegetarian Delights", suffix: "870" },
+  { label: "Main Courses", suffix: '300' },
+]);
 
 const allRecipes = ref<Recipe[]>([
   {
