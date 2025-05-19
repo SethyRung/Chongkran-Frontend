@@ -74,10 +74,6 @@ const navigationItems = reactive<{ label: string; to: string }[]>([
     label: "Recipes",
     to: "/recipes",
   },
-  {
-    label: "About",
-    to: "/about",
-  },
 ]);
 
 const contactItems = reactive<{ label: string; to: string }[]>([
