@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@vueuse/nuxt",
     "@vueuse/motion/nuxt",
+    "@sentry/nuxt/module",
   ],
 
   app: {
@@ -24,4 +25,25 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: "2024-11-27",
+
+  runtimeConfig: {
+    public: {
+      sentry: {
+        dns: ''
+      }
+    }
+  },
+
+  sentry: {
+    sourceMapsUploadOptions: {
+      org: "sethy-rung",
+      project: "chongkran",
+    },
+
+    autoInjectServerSentry: "top-level-import",
+  },
+
+  sourcemap: {
+    client: "hidden",
+  },
 });
