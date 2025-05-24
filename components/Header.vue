@@ -87,8 +87,8 @@ watch(route, () => {
 const profileItems = reactive<DropdownMenuItem[] | DropdownMenuItem[][]>([
   [
     { icon: "i-lucide-user", label: "Your Profile", to: "/profile" },
-    { icon: "i-lucide-heart", label: "Favorites", to: "/favorites" },
-    { icon: "i-lucide-user-pen", label: "Become Author", to: "/become-author" },
+    { icon: "i-lucide-heart", label: "Favorites", to: "/recipes?tab=favorites" },
+    { icon: "i-lucide-user-pen", label: "Become Author" },
   ],
   [{ icon: "i-lucide-log-out", label: "Logout" }],
 ]);
@@ -103,11 +103,6 @@ const navigationItems = reactive<NavigationMenuItem[]>([
     icon: "i-lucide-notebook",
     label: "Recipes",
     to: "/recipes",
-  },
-  {
-    icon: "i-lucide-info",
-    label: "About",
-    to: "/about",
   },
 ]);
 
