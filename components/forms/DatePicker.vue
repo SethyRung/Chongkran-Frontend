@@ -16,7 +16,42 @@
 <script setup lang="ts">
 import type { CalendarDate } from "@internationalized/date";
 import { DateFormatter, getLocalTimeZone } from "@internationalized/date";
-import type { ButtonProps } from "@nuxt/ui";
+
+type UI = {
+  base?: string;
+  label?: string;
+  leadingIcon?: string;
+  trailingIcon?: string;
+};
+
+type DatePickerProps = {
+  label?: string;
+  color?:
+    | "primary"
+    | "secondary"
+    | "success"
+    | "info"
+    | "warning"
+    | "error"
+    | "neutral";
+  variant?: "link" | "solid" | "outline" | "soft" | "subtle" | "ghost";
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  square?: boolean;
+  block?: boolean;
+  loadingAuto?: boolean;
+  icon?: string;
+  leading?: boolean;
+  leadingIcon?: string;
+  trailing?: boolean;
+  trailingIcon?: string;
+  loading?: boolean;
+  loadingIcon?: string;
+  to?: string;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+  target?: null | "_blank" | "_parent" | "_self" | "_top" | string;
+  ui?: UI;
+};
 
 const df = new DateFormatter("en-US", {
   dateStyle: "medium",
@@ -24,10 +59,26 @@ const df = new DateFormatter("en-US", {
 
 const modelValue = defineModel<CalendarDate>();
 
-const props = withDefaults(defineProps<ButtonProps>(), {
+const props = withDefaults(defineProps<DatePickerProps>(), {
   color: "neutral",
   variant: "outline",
   icon: "i-lucide-calendar",
+  size: "md",
+  block: false,
+  square: false,
+  loading: false,
+  loadingAuto: false,
+  disabled: false,
+  leading: true,
+  trailing: true,
+  type: "button",
+  label: undefined,
+  leadingIcon: undefined,
+  trailingIcon: undefined,
+  loadingIcon: undefined,
+  to: undefined,
+  target: "_self",
+  ui: undefined,
 });
 
 const { size: formGroupSize } = useFormField();
