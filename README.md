@@ -22,6 +22,7 @@ This is the frontend of the Recipe Web App built using **Nuxt.js**. It allows us
 - **Pinia** for state management
 - **Tailwind CSS** and **Nuxt UI** for styling
 - **JWT Authentication**
+- **Sentry** for application monitoring
 
 ---
 
@@ -47,7 +48,10 @@ npm install
 Create a `.env` file in the project root and configure it:
 
 ```env
-NUXT_API_BASE_URL=http://localhost:8080/api  # NestJS Backend URL
+ENV="productiion" | "dev"
+NUXT_API_BASE_URL="Api Base URL"
+SENTRY_AUTH_TOKEN=Your-Sentry-Auth-Token
+NUXT_PUBLIC_SENTRY_DNS=Your-Sentry
 ```
 
 ### 4️⃣ Run the Development Server
