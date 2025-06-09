@@ -18,17 +18,13 @@ export default defineNuxtPlugin((nuxtApp) => {
   });
   const isAuthenticated = useCookie<boolean>("isAuthenticated");
   const api = $fetch.create({
+    baseURL: baseURL,
     onRequest({ options }) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      options = {
-        ...options,
-        baseURL: baseURL,
-        headers: {
-          ...options.headers,
-          ...(accessToken.value && {
-            Authorization: `Bearer ${accessToken.value}`,
-          }),
-        },
+      options.headers = {
+        ...options.headers,
+        ...(accessToken.value && {
+          Authorization: `Bearer ${accessToken.value}`,
+        }),
       };
     },
     async onResponse({ request, response, options }) {
