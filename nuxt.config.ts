@@ -40,8 +40,8 @@ export default defineNuxtConfig({
       org: "sethy-rung",
       project: "chongkran",
     },
-
     autoInjectServerSentry: "top-level-import",
+    enabled: process.env.ENV === "production",
   },
 
   sourcemap: {
