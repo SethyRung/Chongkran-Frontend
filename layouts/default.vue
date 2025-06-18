@@ -1,7 +1,9 @@
 <template>
-  <div class="font-sans">
+  <div class="min-h-screen flex flex-col font-sans">
     <Header />
-    <slot></slot>
+    <div class="flex-1">
+      <slot></slot>
+    </div>
     <Footer />
   </div>
 </template>
