@@ -4,7 +4,12 @@
   >
     <div class="max-w-[534px] max-h-full flex flex-col gap-10">
       <h1 class="text-3xl">Log in</h1>
-      <UForm :state="state" class="max-h-full overflow-y-auto space-y-6">
+      <UForm
+        :schema="schema"
+        :state="state"
+        class="max-h-full overflow-y-auto space-y-6"
+        @submit="onSubmit"
+      >
         <UFormField
           label="Email"
           name="email"
@@ -12,9 +17,11 @@
           size="xl"
           :ui="{
             label: 'text-[#666] font-normal',
+            error: 'text-xs',
           }"
         >
           <UInput
+            v-model="state.email"
             :ui="{
               root: 'w-full',
               base: 'rounded-[12px] ring-[#666]/35',
@@ -28,9 +35,11 @@
           size="xl"
           :ui="{
             label: 'text-[#666] font-normal',
+            error: 'text-xs',
           }"
         >
           <UInput
+            v-model="state.password"
             :ui="{
               root: 'w-full',
               base: 'rounded-[12px] ring-[#666]/35',
@@ -42,7 +51,13 @@
           <a href="#" class="underline">Terms of use</a> and
           <a href="#" class="underline">Privacy Policy</a>
         </p>
-        <UButton label="Log in" size="xl" block class="rounded-[12px]" />
+        <UButton
+          label="Log in"
+          type="submit"
+          size="xl"
+          block
+          class="rounded-[12px]"
+        />
         <p class="text-sm text-center text-[#666]">
           Don't have an ccount?
           <NuxtLink to="/auth/sign-up" class="underline text-neutral-900"
@@ -58,9 +73,24 @@
 </template>
 
 <script lang="ts" setup>
+import * as z from "zod";
+import type { FormSubmitEvent } from "@nuxt/ui";
+
 definePageMeta({
   layout: "auth",
 });
 
-const state = reactive({});
+const schema = z.object({
+  email: z.string().email("Invalid email"),
+  password: z.string().min(8, "Must be at least 8 characters"),
+});
+
+type Schema = z.output<typeof schema>;
+
+const state = reactive<Partial<Schema>>({
+  email: undefined,
+  password: undefined,
+});
+
+async function onSubmit(event: FormSubmitEvent<Schema>) {}
 </script>

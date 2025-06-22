@@ -10,7 +10,12 @@
           <NuxtLink to="/auth/login" class="underline">Log in</NuxtLink>
         </p>
       </div>
-      <UForm :state="state" class="max-h-full overflow-y-auto space-y-6">
+      <UForm
+        :schema="schema"
+        :state="state"
+        class="max-h-full overflow-y-auto space-y-6"
+        @submit="onSubmit"
+      >
         <div class="grid grid-rows-2 lg:grid-cols-2 lg:grid-rows-1 gap-4">
           <UFormField
             label="First name"
@@ -20,9 +25,11 @@
             :ui="{
               root: 'w-full',
               label: 'text-[#666] font-normal',
+              error: 'text-xs',
             }"
           >
             <UInput
+              v-model="state.firstName"
               :ui="{
                 root: 'w-full',
                 base: 'rounded-[12px] ring-[#666]/35',
@@ -37,9 +44,11 @@
             :ui="{
               root: 'w-full',
               label: 'text-[#666] font-normal',
+              error: 'text-xs',
             }"
           >
             <UInput
+              v-model="state.lastName"
               :ui="{
                 root: 'w-full',
                 base: 'rounded-[12px] ring-[#666]/35',
@@ -54,9 +63,11 @@
           size="xl"
           :ui="{
             label: 'text-[#666] font-normal',
+            error: 'text-xs',
           }"
         >
           <UInput
+            v-model="state.email"
             :ui="{
               root: 'w-full',
               base: 'rounded-[12px] ring-[#666]/35',
@@ -71,9 +82,11 @@
             size="xl"
             :ui="{
               label: 'text-[#666] font-normal',
+              error: 'text-xs',
             }"
           >
             <UInput
+              v-model="state.password"
               :ui="{
                 root: 'w-full',
                 base: 'rounded-[12px] ring-[#666]/35',
@@ -87,9 +100,11 @@
             size="xl"
             :ui="{
               label: 'text-[#666] font-normal',
+              error: 'text-xs',
             }"
           >
             <UInput
+              v-model="state.confirmPassword"
               :ui="{
                 root: 'w-full',
                 base: 'rounded-[12px] ring-[#666]/35',
@@ -108,6 +123,7 @@
         />
         <UButton
           label="Create an account"
+          type="submit"
           size="xl"
           block
           class="rounded-[12px]"
@@ -121,9 +137,35 @@
 </template>
 
 <script lang="ts" setup>
+import * as z from "zod";
+import type { FormSubmitEvent } from "@nuxt/ui";
+
 definePageMeta({
   layout: "auth",
 });
 
-const state = reactive({});
+const schema = z
+  .object({
+    firstName: z.string(),
+    lastName: z.string(),
+    email: z.string().email("Invalid email"),
+    password: z.string().min(8, "Must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+type Schema = z.output<typeof schema>;
+
+const state = reactive<Partial<Schema>>({
+  firstName: undefined,
+  lastName: undefined,
+  email: undefined,
+  password: undefined,
+  confirmPassword: undefined,
+});
+
+async function onSubmit(event: FormSubmitEvent<Schema>) {}
 </script>
