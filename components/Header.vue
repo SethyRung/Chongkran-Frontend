@@ -15,6 +15,9 @@
     <UDropdownMenu
       v-if="isAuthenticated"
       :items="profileItems"
+      :content="{
+        align: 'end',
+      }"
       :ui="{
         content: 'w-40',
       }"
@@ -29,9 +32,10 @@
     </UDropdownMenu>
     <UButton
       v-else
-      label="Sign in"
+      label="Log in"
       variant="outline"
       class="hidden @md/header:inline-flex"
+      to="/auth/login"
     />
     <UButton
       icon="i-lucide-menu"
@@ -63,10 +67,11 @@
         />
         <UButton
           v-if="!isAuthenticated"
-          label="Sign in"
+          label="Log in"
           variant="outline"
           size="xl"
           block
+          to="/auth/login"
         />
       </template>
     </USlideover>
@@ -76,7 +81,7 @@
 <script lang="ts" setup>
 import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
 
-const isAuthenticated = ref(true);
+const isAuthenticated = useCookie<boolean>("isAuthenticated");
 const isOpen = ref<boolean>(false);
 
 const route = useRoute();
@@ -84,10 +89,14 @@ watch(route, () => {
   isOpen.value = false;
 });
 
-const profileItems = reactive<DropdownMenuItem[] | DropdownMenuItem[][]>([
+const profileItems = reactive<DropdownMenuItem[][]>([
   [
     { icon: "i-lucide-user", label: "Your Profile", to: "/profile" },
-    { icon: "i-lucide-heart", label: "Favorites", to: "/recipes?tab=favorites" },
+    {
+      icon: "i-lucide-heart",
+      label: "Favorites",
+      to: "/recipes?tab=favorites",
+    },
     { icon: "i-lucide-user-pen", label: "Become Author" },
   ],
   [{ icon: "i-lucide-log-out", label: "Logout" }],
@@ -112,7 +121,7 @@ const items = reactive([
     ? {
         icon: "i-lucide-user",
         label: "Profile",
-        children: profileItems.flatMap((item) => item),
+        children: profileItems,
       }
     : {},
 ]);

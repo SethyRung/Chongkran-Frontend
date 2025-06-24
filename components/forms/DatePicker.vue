@@ -70,7 +70,7 @@ const props = withDefaults(defineProps<DatePickerProps>(), {
   loadingAuto: false,
   disabled: false,
   leading: true,
-  trailing: true,
+  trailing: false,
   type: "button",
   label: undefined,
   leadingIcon: undefined,
