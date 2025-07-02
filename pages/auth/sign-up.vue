@@ -13,7 +13,7 @@
       <UForm
         :schema="schema"
         :state="state"
-        class="max-h-full overflow-y-auto space-y-6"
+        class="max-h-full overflow-y-auto no-scrollbar space-y-6"
         @submit="onSubmit"
       >
         <div class="grid grid-rows-2 lg:grid-cols-2 lg:grid-rows-1 gap-4">
@@ -87,6 +87,7 @@
           >
             <UInput
               v-model="state.password"
+              :type="isShowPassword ? 'text' : 'password'"
               :ui="{
                 root: 'w-full',
                 base: 'rounded-[12px] ring-[#666]/35',
@@ -105,6 +106,7 @@
           >
             <UInput
               v-model="state.confirmPassword"
+              type="password"
               :ui="{
                 root: 'w-full',
                 base: 'rounded-[12px] ring-[#666]/35',
@@ -116,6 +118,7 @@
           Use 8 or more characters with a mix of letters, numbers & symbols
         </p>
         <UCheckbox
+          v-model="isShowPassword"
           label="Show password"
           :ui="{
             label: 'text-[#666]',
@@ -143,6 +146,8 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 definePageMeta({
   layout: "auth",
 });
+
+const isShowPassword = ref<boolean>(false);
 
 const schema = z
   .object({

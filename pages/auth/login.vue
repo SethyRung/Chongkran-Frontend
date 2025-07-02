@@ -40,6 +40,7 @@
         >
           <UInput
             v-model="state.password"
+            type="password"
             :ui="{
               root: 'w-full',
               base: 'rounded-[12px] ring-[#666]/35',
