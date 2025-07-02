@@ -27,8 +27,8 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-11-27",
 
   runtimeConfig: {
-    apiBaseUrl: "",
     public: {
+      apiBaseUrl: "",
       sentry: {
         dns: "",
       },

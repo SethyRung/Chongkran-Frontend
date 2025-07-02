@@ -6,7 +6,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const ACCESS_TOKEN_EXPIRED = "Token has expired. Please login again.";
   const REFRESH_TOKEN_PATH = "/api/auth/refresh";
   const config = useRuntimeConfig();
-  const baseURL = config.apiBaseUrl;
+  const baseURL = config.public.apiBaseUrl;
 
   const accessToken = useCookie("access_token", {
     secure: true,
