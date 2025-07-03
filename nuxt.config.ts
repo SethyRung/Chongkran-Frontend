@@ -29,6 +29,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBaseUrl: "",
+      atMaxAge: "",
+      rtMaxAge: "",
       sentry: {
         dns: "",
       },

@@ -1,4 +1,5 @@
 import type { NitroFetchOptions } from "nitropack";
+import type { Response } from "~/types/Response";
 
 export const useApi = async <T>(
   url: string,
@@ -14,6 +15,6 @@ export const useApi = async <T>(
     | "options"
     | "trace"
   >
-): Promise<T> => {
+): Promise<Response<T>> => {
   return useNuxtApp().$api(url, options);
 };

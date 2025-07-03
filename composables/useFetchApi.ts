@@ -1,8 +1,9 @@
 import type { UseFetchOptions } from "#app";
+import type { Response } from "~/types/Response";
 
-export const useFetchApi = async <T = unknown>(
+export const useFetchApi = async <T>(
   url: string | (() => string),
-  options: UseFetchOptions<T>
+  options: UseFetchOptions<Response<T>>
 ) => {
   return useFetch(url, {
     ...options,

@@ -81,7 +81,7 @@
 <script lang="ts" setup>
 import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
 
-const isAuthenticated = useCookie<boolean>("isAuthenticated");
+const isAuthenticated = useCookie<boolean>("authenticated");
 const isOpen = ref<boolean>(false);
 
 const route = useRoute();

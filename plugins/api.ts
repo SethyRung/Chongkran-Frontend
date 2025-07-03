@@ -11,12 +11,19 @@ export default defineNuxtPlugin((nuxtApp) => {
   const accessToken = useCookie("access_token", {
     secure: true,
     sameSite: "strict",
+    maxAge: parseInt(config.public.atMaxAge),
   });
   const refreshToken = useCookie("refresh_token", {
     secure: true,
     sameSite: "strict",
+    maxAge: parseInt(config.public.rtMaxAge),
   });
-  const isAuthenticated = useCookie<boolean>("isAuthenticated");
+  const isAuthenticated = useCookie<boolean>("authenticated", {
+    secure: true,
+    sameSite: "strict",
+    maxAge: parseInt(config.public.rtMaxAge),
+  });
+
   const api = $fetch.create({
     baseURL: baseURL,
     onRequest({ options }) {
@@ -49,6 +56,7 @@ export default defineNuxtPlugin((nuxtApp) => {
             if (resRefresh.status.code === StatusCode.OK) {
               accessToken.value = resRefresh.data.accessToken;
               refreshToken.value = resRefresh.data.refreshToken;
+              isAuthenticated.value = true;
 
               // repeat previous request
               response._data = await $fetch(
