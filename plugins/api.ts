@@ -3,8 +3,11 @@ import type { Response } from "~/types/Response";
 import type { NitroFetchOptions } from "nitropack";
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const ACCESS_TOKEN_EXPIRED = "Token has expired. Please login again.";
-  const REFRESH_TOKEN_PATH = "/api/auth/refresh";
+  const ERROR_MESSAGES = [
+    "Token has expired. Please login again.",
+    "Unauthorized access.",
+  ];
+  const REFRESH_TOKEN_PATH = "/auth/refresh";
   const config = useRuntimeConfig();
   const baseURL = config.public.apiBaseUrl;
 
@@ -40,7 +43,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         if (
           res &&
           res.status.code === StatusCode.UNAUTHORIZED &&
-          res.status.message.includes(ACCESS_TOKEN_EXPIRED) &&
+          ERROR_MESSAGES.includes(res.status.message) &&
           refreshToken.value
         ) {
           try {
@@ -48,6 +51,7 @@ export default defineNuxtPlugin((nuxtApp) => {
               Response<{ accessToken: string; refreshToken: string }>
             >(REFRESH_TOKEN_PATH, {
               method: "GET",
+              baseURL: baseURL,
               headers: {
                 Authorization: `Bearer ${refreshToken.value}`,
               },
@@ -87,7 +91,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     accessToken.value = null;
     refreshToken.value = null;
     isAuthenticated.value = false;
-    navigateTo("/login");
+    navigateTo("/auth/login");
   };
 
   nuxtApp.provide("api", api);
