@@ -142,10 +142,13 @@
 <script lang="ts" setup>
 import * as z from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
+import { StatusCode } from "~/enums/base";
 
 definePageMeta({
   layout: "auth",
 });
+
+const toast = useToast();
 
 const isShowPassword = ref<boolean>(false);
 
@@ -172,5 +175,33 @@ const state = reactive<Partial<Schema>>({
   confirmPassword: undefined,
 });
 
-async function onSubmit(event: FormSubmitEvent<Schema>) {}
+const isSubmitting = ref<boolean>(false);
+
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+  isSubmitting.value = true;
+  const response = await useApi<string>("/auth/signup", {
+    method: "POST",
+    body: {
+      firstName: event.data.firstName,
+      lastName: event.data.lastName,
+      email: event.data.email,
+      password: event.data.password,
+    },
+  });
+  if (response.status.code === StatusCode.OK) {
+    toast.add({
+      title: "Success",
+      description: response.data,
+      color: "success",
+    });
+    navigateTo("/auth/login");
+  } else {
+    toast.add({
+      title: "Error",
+      description: response.status.message,
+      color: "error",
+    });
+  }
+  isSubmitting.value = false;
+}
 </script>
