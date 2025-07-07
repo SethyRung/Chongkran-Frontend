@@ -40,6 +40,7 @@
         >
           <UInput
             v-model="state.password"
+            type="password"
             :ui="{
               root: 'w-full',
               base: 'rounded-[12px] ring-[#666]/35',
@@ -57,6 +58,7 @@
           size="xl"
           block
           class="rounded-[12px]"
+          :loading="isSubmitting"
         />
         <p class="text-sm text-center text-[#666]">
           Don't have an ccount?
@@ -75,10 +77,15 @@
 <script lang="ts" setup>
 import * as z from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
+import { StatusCode } from "~/enums/base";
 
 definePageMeta({
   layout: "auth",
 });
+
+const config = useRuntimeConfig();
+
+const toast = useToast();
 
 const schema = z.object({
   email: z.string().email("Invalid email"),
@@ -92,5 +99,45 @@ const state = reactive<Partial<Schema>>({
   password: undefined,
 });
 
-async function onSubmit(event: FormSubmitEvent<Schema>) {}
+const accessToken = useCookie("access_token", {
+  secure: true,
+  sameSite: "strict",
+  maxAge: parseInt(config.public.atMaxAge),
+});
+const refreshToken = useCookie("refresh_token", {
+  secure: true,
+  sameSite: "strict",
+  maxAge: parseInt(config.public.rtMaxAge),
+});
+const isAuthenticated = useCookie<boolean>("authenticated", {
+  secure: true,
+  sameSite: "strict",
+  maxAge: parseInt(config.public.rtMaxAge),
+});
+
+const isSubmitting = ref<boolean>(false);
+
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+  isSubmitting.value = true;
+  const response = await useApi<{
+    accessToken: string;
+    refreshToken: string;
+  }>("/auth/login", {
+    method: "POST",
+    body: event.data,
+  });
+  if (response.status.code === StatusCode.OK) {
+    isAuthenticated.value = true;
+    accessToken.value = response.data.accessToken;
+    refreshToken.value = response.data.refreshToken;
+    navigateTo("/");
+  } else {
+    toast.add({
+      title: "Error",
+      description: response.status.message,
+      color: "error",
+    });
+  }
+  isSubmitting.value = false;
+}
 </script>

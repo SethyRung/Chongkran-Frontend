@@ -13,7 +13,7 @@
       <UForm
         :schema="schema"
         :state="state"
-        class="max-h-full overflow-y-auto space-y-6"
+        class="max-h-full overflow-y-auto no-scrollbar space-y-6"
         @submit="onSubmit"
       >
         <div class="grid grid-rows-2 lg:grid-cols-2 lg:grid-rows-1 gap-4">
@@ -87,6 +87,7 @@
           >
             <UInput
               v-model="state.password"
+              :type="isShowPassword ? 'text' : 'password'"
               :ui="{
                 root: 'w-full',
                 base: 'rounded-[12px] ring-[#666]/35',
@@ -105,6 +106,7 @@
           >
             <UInput
               v-model="state.confirmPassword"
+              type="password"
               :ui="{
                 root: 'w-full',
                 base: 'rounded-[12px] ring-[#666]/35',
@@ -116,6 +118,7 @@
           Use 8 or more characters with a mix of letters, numbers & symbols
         </p>
         <UCheckbox
+          v-model="isShowPassword"
           label="Show password"
           :ui="{
             label: 'text-[#666]',
@@ -139,10 +142,15 @@
 <script lang="ts" setup>
 import * as z from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
+import { StatusCode } from "~/enums/base";
 
 definePageMeta({
   layout: "auth",
 });
+
+const toast = useToast();
+
+const isShowPassword = ref<boolean>(false);
 
 const schema = z
   .object({
@@ -167,5 +175,33 @@ const state = reactive<Partial<Schema>>({
   confirmPassword: undefined,
 });
 
-async function onSubmit(event: FormSubmitEvent<Schema>) {}
+const isSubmitting = ref<boolean>(false);
+
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+  isSubmitting.value = true;
+  const response = await useApi<string>("/auth/signup", {
+    method: "POST",
+    body: {
+      firstName: event.data.firstName,
+      lastName: event.data.lastName,
+      email: event.data.email,
+      password: event.data.password,
+    },
+  });
+  if (response.status.code === StatusCode.OK) {
+    toast.add({
+      title: "Success",
+      description: response.data,
+      color: "success",
+    });
+    navigateTo("/auth/login");
+  } else {
+    toast.add({
+      title: "Error",
+      description: response.status.message,
+      color: "error",
+    });
+  }
+  isSubmitting.value = false;
+}
 </script>

@@ -80,14 +80,37 @@
 
 <script lang="ts" setup>
 import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
+import { StatusCode } from "~/enums/base";
 
-const isAuthenticated = useCookie<boolean>("isAuthenticated");
+const accessToken = useCookie("access_token");
+const refreshToken = useCookie("refresh_token");
+const isAuthenticated = useCookie<boolean>("authenticated");
 const isOpen = ref<boolean>(false);
 
 const route = useRoute();
 watch(route, () => {
   isOpen.value = false;
 });
+
+const toast = useToast();
+
+const logout = async () => {
+  const response = await useApi("/auth/logout", {
+    method: "POST",
+  });
+  if (response.status.code === StatusCode.OK) {
+    isAuthenticated.value = false;
+    accessToken.value = null;
+    refreshToken.value = null;
+    navigateTo("/");
+  } else {
+    toast.add({
+      title: "Error",
+      description: response.status.message,
+      color: "error",
+    });
+  }
+};
 
 const profileItems = reactive<DropdownMenuItem[][]>([
   [
@@ -99,7 +122,7 @@ const profileItems = reactive<DropdownMenuItem[][]>([
     },
     { icon: "i-lucide-user-pen", label: "Become Author" },
   ],
-  [{ icon: "i-lucide-log-out", label: "Logout" }],
+  [{ icon: "i-lucide-log-out", label: "Logout", onSelect: logout }],
 ]);
 
 const navigationItems = reactive<NavigationMenuItem[]>([

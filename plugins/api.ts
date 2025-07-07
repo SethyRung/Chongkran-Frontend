@@ -3,20 +3,30 @@ import type { Response } from "~/types/Response";
 import type { NitroFetchOptions } from "nitropack";
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const ACCESS_TOKEN_EXPIRED = "Token has expired. Please login again.";
-  const REFRESH_TOKEN_PATH = "/api/auth/refresh";
+  const ERROR_MESSAGES = [
+    "Token has expired. Please login again.",
+    "Unauthorized access.",
+  ];
+  const REFRESH_TOKEN_PATH = "/auth/refresh";
   const config = useRuntimeConfig();
-  const baseURL = config.apiBaseUrl;
+  const baseURL = config.public.apiBaseUrl;
 
   const accessToken = useCookie("access_token", {
     secure: true,
     sameSite: "strict",
+    maxAge: parseInt(config.public.atMaxAge),
   });
   const refreshToken = useCookie("refresh_token", {
     secure: true,
     sameSite: "strict",
+    maxAge: parseInt(config.public.rtMaxAge),
   });
-  const isAuthenticated = useCookie<boolean>("isAuthenticated");
+  const isAuthenticated = useCookie<boolean>("authenticated", {
+    secure: true,
+    sameSite: "strict",
+    maxAge: parseInt(config.public.rtMaxAge),
+  });
+
   const api = $fetch.create({
     baseURL: baseURL,
     onRequest({ options }) {
@@ -33,7 +43,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         if (
           res &&
           res.status.code === StatusCode.UNAUTHORIZED &&
-          res.status.message.includes(ACCESS_TOKEN_EXPIRED) &&
+          ERROR_MESSAGES.includes(res.status.message) &&
           refreshToken.value
         ) {
           try {
@@ -41,6 +51,7 @@ export default defineNuxtPlugin((nuxtApp) => {
               Response<{ accessToken: string; refreshToken: string }>
             >(REFRESH_TOKEN_PATH, {
               method: "GET",
+              baseURL: baseURL,
               headers: {
                 Authorization: `Bearer ${refreshToken.value}`,
               },
@@ -49,6 +60,7 @@ export default defineNuxtPlugin((nuxtApp) => {
             if (resRefresh.status.code === StatusCode.OK) {
               accessToken.value = resRefresh.data.accessToken;
               refreshToken.value = resRefresh.data.refreshToken;
+              isAuthenticated.value = true;
 
               // repeat previous request
               response._data = await $fetch(
@@ -79,7 +91,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     accessToken.value = null;
     refreshToken.value = null;
     isAuthenticated.value = false;
-    navigateTo("/login");
+    navigateTo("/auth/login");
   };
 
   nuxtApp.provide("api", api);
