@@ -168,7 +168,7 @@
       <div
         class="mt-8 grid grid-cols-[repeat(auto-fit,_minmax(288px,_1fr))] gap-4"
       >
-        <template v-if="status !== 'pending'">
+        <template v-if="status === 'success'">
           <RecipeCard
             v-for="recipe in recipes"
             :key="recipe.id"
