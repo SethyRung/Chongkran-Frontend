@@ -4,13 +4,13 @@
   >
     <div class="space-y-3">
       <NuxtImg
-        :src="recipe.img"
+        :src="recipe.image"
         class="w-full h-60 object-cover rounded group-hover:scale-105 transition-all"
       />
       <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">
-        {{ recipe.name }}
+        {{ recipe.title }}
       </h5>
-      <UBadge :label="recipe.type" variant="soft" color="primary" />
+      <UBadge :label="recipe.category" variant="soft" color="primary" />
     </div>
     <div class="flex gap-1">
       <UButton
@@ -19,17 +19,13 @@
         block
         :to="`recipes/${recipe.id}`"
       />
-      <UButton
-        icon="i-lucide-heart"
-        variant="subtle"
-        :color="recipe.isFavorite ? 'primary' : 'neutral'"
-      />
+      <UButton icon="i-lucide-heart" variant="subtle" color="neutral" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import type { Recipe } from "~/types/Recipe";
+import type { Recipe } from "~/types";
 
 type Props = {
   recipe: Recipe;

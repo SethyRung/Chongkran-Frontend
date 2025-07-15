@@ -168,46 +168,75 @@
       <div
         class="mt-8 grid grid-cols-[repeat(auto-fit,_minmax(288px,_1fr))] gap-4"
       >
-        <RecipeCard
-          v-for="recipe in allRecipes"
-          :key="recipe.id"
-          :recipe="recipe"
-        />
+        <template v-if="status === 'success'">
+          <RecipeCard
+            v-for="recipe in recipes"
+            :key="recipe.id"
+            :recipe="recipe"
+          />
+        </template>
+        <template v-else>
+          <div
+            v-for="i in Array(4)"
+            :key="i"
+            class="group w-full p-6 space-y-3 bg-white border border-gray-200 rounded-lg shadow-sm"
+          >
+            <div class="space-y-3">
+              <USkeleton
+                class="w-full h-60 group-hover:scale-105 transition-all"
+              />
+              <USkeleton class="w-3/4 h-8 mb-2" />
+              <USkeleton class="w-24 h-6" />
+            </div>
+            <div class="flex gap-1">
+              <USkeleton class="grow h-8" />
+              <USkeleton class="size-8" />
+            </div>
+          </div>
+        </template>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
+import type { Category, Paginated } from "~/types";
 import type { Recipe } from "~/types/Recipe";
 
-const allRecipes = ref<Recipe[]>([
-  {
-    id: "1",
-    img: "/images/aubergine-and-sesame-noodles.jpg",
-    name: "Aubergine and Sesame Noodles",
-    type: "Vegetarian Delights",
-    isFavorite: true,
+const {
+  status,
+  data: response,
+  execute,
+} = await useAsyncData(
+  "home",
+  async () => {
+    const [recipesRes, categoriesRes] = await Promise.all([
+      useApi<Paginated<Recipe>>("/recipes", {
+        method: "GET",
+        query: { limit: 4, page: 1 },
+      }),
+      useApi<Paginated<Category>>("/categories", { method: "GET" }),
+    ]);
+    return {
+      recipes: recipesRes.data,
+      categories: categoriesRes.data,
+    };
   },
   {
-    id: "2",
-    img: "/images/aubergine-and-sesame-noodles.jpg",
-    name: "Spaghetti Carbonara",
-    type: "Main Courses",
-    isFavorite: false,
-  },
-  {
-    id: "3",
-    img: "/images/aubergine-and-sesame-noodles.jpg",
-    name: "Caesar Salad",
-    type: "Salads & Sides",
-    isFavorite: false,
-  },
-  {
-    id: "4",
-    img: "/images/aubergine-and-sesame-noodles.jpg",
-    name: "Chocolate Cake",
-    type: "Desserts & Sweets",
-    isFavorite: false,
-  },
-]);
+    lazy: true,
+    immediate: false,
+    transform: (data) =>
+      data.recipes.content.map((recipe) => ({
+        ...recipe,
+        category:
+          data.categories.content.find((category) => category.id === recipe.id)
+            ?.name ?? "",
+      })),
+  }
+);
+
+const recipes = computed<Recipe[]>(() => response.value ?? []);
+
+onMounted(async () => {
+  await execute();
+});
 </script>

@@ -1,4 +1,4 @@
-export type PaginatedResponse<T> = {
+export type Paginated<T> = {
   content: T[];
   total: number;
   page: number;

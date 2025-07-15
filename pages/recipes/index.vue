@@ -64,11 +64,34 @@
     </div>
 
     <div class="grid grid-cols-[repeat(auto-fit,_minmax(288px,_1fr))] gap-4">
-      <RecipeCard
-        v-for="recipe in allRecipes"
-        :key="recipe.id"
-        :recipe="recipe"
-      />
+      <template
+        v-if="categoriesStatus === 'success' && recipesStatus === 'success'"
+      >
+        <RecipeCard
+          v-for="recipe in recipes"
+          :key="recipe.id"
+          :recipe="recipe"
+        />
+      </template>
+      <template v-else>
+        <div
+          v-for="i in Array(4)"
+          :key="i"
+          class="group w-full p-6 space-y-3 bg-white border border-gray-200 rounded-lg shadow-sm"
+        >
+          <div class="space-y-3">
+            <USkeleton
+              class="w-full h-60 group-hover:scale-105 transition-all"
+            />
+            <USkeleton class="w-3/4 h-8 mb-2" />
+            <USkeleton class="w-24 h-6" />
+          </div>
+          <div class="flex gap-1">
+            <USkeleton class="grow h-8" />
+            <USkeleton class="size-8" />
+          </div>
+        </div>
+      </template>
     </div>
     <div class="flex justify-center">
       <UPagination
@@ -76,14 +99,14 @@
         :show-controls="false"
         show-edges
         :items-per-page="8"
-        :total="40"
+        :total="totalPage"
       />
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import type { CommandPaletteItem, TabsItem } from "@nuxt/ui";
-import type { Recipe } from "~/types/Recipe";
+import type { Category, Paginated, Recipe } from "~/types";
 
 const search = ref<string>();
 
@@ -102,68 +125,69 @@ const selectedTab = ref<string>("all");
 
 const sortOptions = ref(["Date", "Name"]);
 
-const filterOptions = ref<CommandPaletteItem[]>([
-  { label: "Vegetarian Delights", suffix: "870" },
-  { label: "Main Courses", suffix: '300' },
-]);
+// const filterOptions = ref<CommandPaletteItem[]>([
+//   { label: "Vegetarian Delights", suffix: "870" },
+//   { label: "Main Courses", suffix: "300" },
+// ]);
 
-const allRecipes = ref<Recipe[]>([
-  {
-    id: "1",
-    img: "/images/aubergine-and-sesame-noodles.jpg",
-    name: "Aubergine and Sesame Noodles",
-    type: "Vegetarian Delights",
-    isFavorite: true,
-  },
-  {
-    id: "2",
-    img: "/images/aubergine-and-sesame-noodles.jpg",
-    name: "Spaghetti Carbonara",
-    type: "Main Courses",
-    isFavorite: false,
-  },
-  {
-    id: "3",
-    img: "/images/aubergine-and-sesame-noodles.jpg",
-    name: "Caesar Salad",
-    type: "Salads & Sides",
-    isFavorite: false,
-  },
-  {
-    id: "4",
-    img: "/images/aubergine-and-sesame-noodles.jpg",
-    name: "Chocolate Cake",
-    type: "Desserts & Sweets",
-    isFavorite: false,
-  },
-  {
-    id: "5",
-    img: "/images/aubergine-and-sesame-noodles.jpg",
-    name: "Sushi",
-    type: "International Flavors",
-    isFavorite: false,
-  },
-  {
-    id: "6",
-    img: "/images/aubergine-and-sesame-noodles.jpg",
-    name: "Grilled Chicken",
-    type: "Healthy Eats",
-    isFavorite: false,
-  },
-  {
-    id: "7",
-    img: "/images/aubergine-and-sesame-noodles.jpg",
-    name: "Tacos",
-    type: "Quick & Easy Supper",
-    isFavorite: false,
-  },
-  {
-    id: "8",
-    img: "/images/aubergine-and-sesame-noodles.jpg",
-    name: "Bruschetta",
-    type: "Appetizers",
-    isFavorite: false,
-  },
-]);
+const filterOptions = computed<CommandPaletteItem[]>(() =>
+  categories.value.map((category) => ({
+    labeL: category.name,
+    suffix: recipes.value
+      .filter((recipe) => recipe.category === category.id)
+      .length.toString(),
+  }))
+);
+
 const page = ref(1);
+const itemPerPage = ref<number>(8);
+
+const {
+  status: categoriesStatus,
+  data: categoriesRes,
+  execute: categoriesExecute,
+} = await useAsyncData(
+  () => useApi<Paginated<Category>>("/categories", { method: "GET" }),
+  {
+    lazy: true,
+    immediate: false,
+  }
+);
+
+const {
+  status: recipesStatus,
+  data: recipesRes,
+  execute: recipesExecute,
+} = await useAsyncData(
+  () =>
+    useApi<Paginated<Recipe>>("/recipes", {
+      method: "GET",
+      query: { limit: itemPerPage.value, page: page.value },
+    }),
+  {
+    lazy: true,
+    immediate: false,
+  }
+);
+
+const categories = computed<Category[]>(
+  () => categoriesRes.value?.data.content ?? []
+);
+
+const recipes = computed<Recipe[]>(
+  () =>
+    recipesRes.value?.data.content.map((recipe) => ({
+      ...recipe,
+      category:
+        categories.value.find((category) => category.id === recipe.id)?.name ??
+        "",
+    })) ?? []
+);
+
+const totalPage = computed<number>(() => recipesRes.value?.data.total ?? 0);
+
+onMounted(() => {
+  categoriesExecute();
+  recipesExecute();
+});
 </script>
