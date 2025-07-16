@@ -19,7 +19,7 @@
     "@sentry/nuxt": "^9.38.0",
     "@vueuse/motion": "^3.0.3",
     "@vueuse/nuxt": "^13.5.0",
-    "nuxt": "^3.17.6",
+    "nuxt": "^4.0.0",
     "vue": "^3.5.17"
   },
   "devDependencies": {
