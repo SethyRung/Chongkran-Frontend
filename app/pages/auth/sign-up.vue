@@ -142,7 +142,7 @@
 <script lang="ts" setup>
 import * as z from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
-import { StatusCode } from "~/enums/base";
+import { StatusCode } from "#shared/enums/base";
 
 definePageMeta({
   layout: "auth",

@@ -25,8 +25,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { Recipe } from "~/types";
-
 type Props = {
   recipe: Recipe;
 };

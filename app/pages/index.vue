@@ -199,9 +199,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { Category, Paginated } from "~/types";
-import type { Recipe } from "~/types/Recipe";
-
 const {
   status,
   data: response,

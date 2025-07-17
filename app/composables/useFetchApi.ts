@@ -1,5 +1,5 @@
 import type { UseFetchOptions } from "#app";
-import type { Response } from "~/types/Response";
+import type { Response } from "#shared/types/Response";
 
 export const useFetchApi = async <T>(
   url: string | (() => string),
