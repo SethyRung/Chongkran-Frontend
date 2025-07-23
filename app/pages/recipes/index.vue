@@ -46,6 +46,7 @@
           />
           <template #content>
             <UCommandPalette
+              v-model="filterBy"
               multiple
               placeholder="Search category..."
               :groups="[{ id: 'labels', items: filterOptions }]"
@@ -106,7 +107,6 @@
 </template>
 <script setup lang="ts">
 import type { CommandPaletteItem, TabsItem } from "@nuxt/ui";
-import type { Category, Paginated, Recipe } from "~/types";
 
 const search = ref<string>();
 
@@ -125,11 +125,6 @@ const selectedTab = ref<string>("all");
 
 const sortOptions = ref(["Date", "Name"]);
 
-// const filterOptions = ref<CommandPaletteItem[]>([
-//   { label: "Vegetarian Delights", suffix: "870" },
-//   { label: "Main Courses", suffix: "300" },
-// ]);
-
 const filterOptions = computed<CommandPaletteItem[]>(() =>
   categories.value.map((category) => ({
     labeL: category.name,
@@ -138,6 +133,8 @@ const filterOptions = computed<CommandPaletteItem[]>(() =>
       .length.toString(),
   }))
 );
+
+const filterBy = ref<string>();
 
 const page = ref(1);
 const itemPerPage = ref<number>(8);

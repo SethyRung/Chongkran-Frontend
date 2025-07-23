@@ -80,7 +80,7 @@
 
 <script lang="ts" setup>
 import type { DropdownMenuItem, NavigationMenuItem } from "@nuxt/ui";
-import { StatusCode } from "~/enums/base";
+import { StatusCode } from "#shared/enums/base";
 
 const accessToken = useCookie("access_token");
 const refreshToken = useCookie("refresh_token");
