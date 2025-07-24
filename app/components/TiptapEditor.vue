@@ -1,19 +1,5 @@
 <template>
   <div>
-    <!-- <div v-if="tiptapEditor">
-      <button @click="tiptapEditor.chain().focus().unsetAllMarks().run()">
-        clear marks
-      </button>
-      <button @click="tiptapEditor.chain().focus().clearNodes().run()">
-        clear nodes
-      </button>
-      <button @click="tiptapEditor.chain().focus().setHorizontalRule().run()">
-        horizontal rule
-      </button>
-      <button @click="tiptapEditor.chain().focus().setHardBreak().run()">
-        hard break
-      </button>
-    </div> -->
     <UCard
       variant="outline"
       :ui="{
@@ -45,7 +31,7 @@
           <USeparator orientation="vertical" class="h-6" />
           <UPopover>
             <UButton
-              :icon="getTypography(tiptapEditor)"
+              :icon="getTypography()"
               variant="soft"
               color="neutral"
               trailing-icon="i-lucide-chevron-down"
@@ -62,12 +48,12 @@
                   :key="level"
                   variant="ghost"
                   :color="
-                    getTypography(tiptapEditor) === `i-lucide-heading-${level}`
+                    getTypography() === `i-lucide-heading-${level}`
                       ? 'primary'
                       : 'neutral'
                   "
                   :icon="`i-lucide-heading-${level}`"
-                  @click="changeTypography(tiptapEditor, level)"
+                  @click="changeTypography(level)"
                 >
                   Heading {{ level }}
                 </UButton>
@@ -78,7 +64,7 @@
             <UButton
               icon="i-lucide-list"
               variant="ghost"
-              :color="getSelectedList(tiptapEditor) ? 'primary' : 'neutral'"
+              :color="getSelectedList() ? 'primary' : 'neutral'"
             />
 
             <template #content>
@@ -88,9 +74,7 @@
                   label="Bullet List"
                   variant="ghost"
                   :color="
-                    getSelectedList(tiptapEditor) === 'bulletList'
-                      ? 'primary'
-                      : 'neutral'
+                    getSelectedList() === 'bulletList' ? 'primary' : 'neutral'
                   "
                   @click="
                     tiptapEditor?.chain().focus().toggleBulletList().run()
@@ -101,9 +85,7 @@
                   label="Ordered List"
                   variant="ghost"
                   :color="
-                    getSelectedList(tiptapEditor) === 'orderedList'
-                      ? 'primary'
-                      : 'neutral'
+                    getSelectedList() === 'orderedList' ? 'primary' : 'neutral'
                   "
                   @click="
                     tiptapEditor?.chain().focus().toggleOrderedList().run()
@@ -114,9 +96,7 @@
                   label="Task List"
                   variant="ghost"
                   :color="
-                    getSelectedList(tiptapEditor) === 'orderedList'
-                      ? 'primary'
-                      : 'neutral'
+                    getSelectedList() === 'orderedList' ? 'primary' : 'neutral'
                   "
                   @click="
                     tiptapEditor?.chain().focus().toggleOrderedList().run()
@@ -176,7 +156,13 @@
             :color="tiptapEditor?.isActive('highlight') ? 'primary' : 'neutral'"
             @click="tiptapEditor?.chain().focus().toggleHighlight().run()"
           />
-          <UPopover>
+          <UPopover
+            @update:open="
+              (value) => {
+                if (value) getLink();
+              }
+            "
+          >
             <UButton
               icon="i-lucide-link"
               variant="ghost"
@@ -185,6 +171,7 @@
             <template #content>
               <UButtonGroup>
                 <UInput
+                  v-model="link"
                   placeholder="Paste a link"
                   :ui="{
                     base: 'w-56 focus-visible:ring focus-visible:ring-accented',
@@ -195,6 +182,7 @@
                     color="neutral"
                     variant="outline"
                     icon="i-lucide-corner-down-left"
+                    @click="setLink"
                   />
                 </UTooltip>
                 <UTooltip text="Open in new window">
@@ -202,6 +190,7 @@
                     color="neutral"
                     variant="outline"
                     icon="i-lucide-square-arrow-out-up-right"
+                    :to="link"
                   />
                 </UTooltip>
                 <UTooltip text="Remove link">
@@ -209,6 +198,7 @@
                     color="neutral"
                     variant="outline"
                     icon="i-lucide-trash"
+                    @click="removeLink"
                   />
                 </UTooltip>
               </UButtonGroup>
@@ -272,7 +262,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { Editor } from "@tiptap/vue-3";
 import { EditorContent, useEditor } from "@tiptap/vue-3";
 import { StarterKit as TiptapStarterKit } from "@tiptap/starter-kit";
 import { Image as TiptapImage } from "@tiptap/extension-image";
@@ -794,28 +783,46 @@ const tiptapEditor = useEditor({
   ],
 });
 
-const getTypography = (editor: Editor | undefined): string => {
-  if (!editor) return "i-material-symbols-personal-places-outline";
+const getTypography = (): string => {
+  if (!tiptapEditor.value) return "i-material-symbols-personal-places-outline";
   for (let i = 1; i <= 6; i++) {
-    if (editor.isActive("heading", { level: i })) {
+    if (tiptapEditor.value.isActive("heading", { level: i })) {
       return `i-lucide-heading-${i}`;
     }
   }
   return "i-material-symbols-personal-places-outline";
 };
 
-const changeTypography = (editor: Editor | undefined, level: Level) => {
-  if (editor?.isActive("heading", { level })) {
-    editor?.chain().focus().setParagraph().run();
+const changeTypography = (level: Level) => {
+  if (tiptapEditor.value?.isActive("heading", { level })) {
+    tiptapEditor.value?.chain().focus().setParagraph().run();
   } else {
-    editor?.chain().focus().setHeading({ level }).run();
+    tiptapEditor.value?.chain().focus().setHeading({ level }).run();
   }
 };
 
-const getSelectedList = (editor: Editor | undefined) => {
-  if (editor?.isActive("bulletList")) return "bulletList";
-  if (editor?.isActive("orderedList")) return "orderedList";
-  if (editor?.isActive("taskList")) return "taskList";
+const getSelectedList = () => {
+  if (tiptapEditor.value?.isActive("bulletList")) return "bulletList";
+  if (tiptapEditor.value?.isActive("orderedList")) return "orderedList";
+  if (tiptapEditor.value?.isActive("taskList")) return "taskList";
+};
+
+const link = ref<string>();
+const setLink = () => {
+  tiptapEditor.value
+    ?.chain()
+    .focus()
+    .extendMarkRange("link")
+    .setLink({ href: link.value ?? "" })
+    .run();
+};
+
+const removeLink = () => {
+  tiptapEditor.value?.chain().focus().extendMarkRange("link").unsetLink().run();
+};
+
+const getLink = () => {
+  link.value = tiptapEditor.value?.getAttributes("link").href;
 };
 </script>
 <style scoped>
