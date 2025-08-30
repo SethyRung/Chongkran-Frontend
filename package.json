@@ -14,7 +14,7 @@
   "dependencies": {
     "@nuxt/image": "^1.11.0",
     "@nuxt/ui": "^3.3.2",
-    "@sentry/nuxt": "^9.46.0",
+    "@sentry/nuxt": "^10.8.0",
     "@tiptap/extension-highlight": "^3.3.0",
     "@tiptap/extension-image": "^3.3.0",
     "@tiptap/extension-subscript": "^3.3.0",
@@ -34,8 +34,8 @@
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.65",
-    "@iconify-json/simple-icons": "^1.2.49",
     "@iconify-json/material-symbols": "^1.2.33",
+    "@iconify-json/simple-icons": "^1.2.49",
     "@nuxt/eslint": "^1.9.0",
     "eslint": "^9.34.0",
     "typescript": "^5.9.2"
