@@ -1,3 +1,94 @@
+<script setup lang="ts">
+import { EditorContent, useEditor } from "@tiptap/vue-3";
+import { StarterKit as TiptapStarterKit } from "@tiptap/starter-kit";
+import { Image as TiptapImage } from "@tiptap/extension-image";
+import { TaskItem as TiptapTaskItem } from "@tiptap/extension-task-item";
+import { TaskList as TiptapTaskList } from "@tiptap/extension-task-list";
+import { TextAlign as TiptapTextAlign } from "@tiptap/extension-text-align";
+import { Typography as TiptapTypography } from "@tiptap/extension-typography";
+import { Highlight as TiptapHighlight } from "@tiptap/extension-highlight";
+import { Subscript as TiptapSubscript } from "@tiptap/extension-subscript";
+import { Superscript as TiptapSuperscript } from "@tiptap/extension-superscript";
+import { Underline as TiptapUnderline } from "@tiptap/extension-underline";
+
+type Level = 1 | 2 | 3 | 4 | 5 | 6;
+
+type TextAlign = "left" | "center" | "right" | "justify";
+
+const HeadingList: Array<Level> = [1, 2, 3, 4, 5, 6];
+const TextAlignList: Array<TextAlign> = ["left", "center", "right", "justify"];
+
+const modelValue = defineModel<string>();
+
+const tiptapEditor = useEditor({
+  content: modelValue.value ?? "",
+  editorProps: {
+    attributes: {
+      autocomplete: "off",
+      autocorrect: "off",
+      autocapitalize: "off",
+    },
+  },
+  extensions: [
+    TiptapStarterKit,
+    TiptapImage,
+    TiptapTaskItem.configure({ nested: true }),
+    TiptapTaskList,
+    TiptapTextAlign.configure({ types: ["heading", "paragraph"] }),
+    TiptapTypography,
+    TiptapHighlight.configure({ multicolor: true }),
+    TiptapSubscript,
+    TiptapSuperscript,
+    TiptapUnderline,
+  ],
+  onBlur({ editor }) {
+    modelValue.value = editor.getHTML();
+  },
+});
+
+function getTypography() {
+  if (!tiptapEditor.value) return "i-material-symbols-personal-places-outline";
+  for (let i = 1; i <= 6; i++) {
+    if (tiptapEditor.value.isActive("heading", { level: i })) {
+      return `i-lucide-heading-${i}`;
+    }
+  }
+  return "i-material-symbols-personal-places-outline";
+}
+
+function changeTypography(level: Level) {
+  if (tiptapEditor.value?.isActive("heading", { level })) {
+    tiptapEditor.value?.chain().focus().setParagraph().run();
+  } else {
+    tiptapEditor.value?.chain().focus().setHeading({ level }).run();
+  }
+}
+
+function getSelectedList() {
+  if (tiptapEditor.value?.isActive("bulletList")) return "bulletList";
+  if (tiptapEditor.value?.isActive("orderedList")) return "orderedList";
+  if (tiptapEditor.value?.isActive("taskList")) return "taskList";
+}
+
+const link = ref<string>();
+function setLink() {
+  tiptapEditor.value
+    ?.chain()
+    .focus()
+    .extendMarkRange("link")
+    .setLink({ href: link.value ?? "" })
+    .run();
+}
+
+function removeLink() {
+  tiptapEditor.value?.chain().focus().extendMarkRange("link").unsetLink().run();
+}
+
+function getLink() {
+  link.value = tiptapEditor.value?.getAttributes("link").href;
+}
+</script>
+
 <template>
   <UCard
     variant="outline"
@@ -231,12 +322,6 @@
           "
           @click="tiptapEditor?.chain().focus().setTextAlign(align).run()"
         />
-        <USeparator orientation="vertical" class="h-6" />
-        <UButton
-          icon="i-lucide-image"
-          variant="ghost"
-          :color="tiptapEditor?.isActive('image') ? 'primary' : 'neutral'"
-        />
       </div>
     </template>
     <ClientOnly>
@@ -247,96 +332,7 @@
     </ClientOnly>
   </UCard>
 </template>
-<script setup lang="ts">
-import { EditorContent, useEditor } from "@tiptap/vue-3";
-import { StarterKit as TiptapStarterKit } from "@tiptap/starter-kit";
-import { Image as TiptapImage } from "@tiptap/extension-image";
-import { TaskItem as TiptapTaskItem } from "@tiptap/extension-task-item";
-import { TaskList as TiptapTaskList } from "@tiptap/extension-task-list";
-import { TextAlign as TiptapTextAlign } from "@tiptap/extension-text-align";
-import { Typography as TiptapTypography } from "@tiptap/extension-typography";
-import { Highlight as TiptapHighlight } from "@tiptap/extension-highlight";
-import { Subscript as TiptapSubscript } from "@tiptap/extension-subscript";
-import { Superscript as TiptapSuperscript } from "@tiptap/extension-superscript";
-import { Underline as TiptapUnderline } from "@tiptap/extension-underline";
 
-type Level = 1 | 2 | 3 | 4 | 5 | 6;
-
-type TextAlign = "left" | "center" | "right" | "justify";
-
-const HeadingList: Array<Level> = [1, 2, 3, 4, 5, 6];
-const TextAlignList: Array<TextAlign> = ["left", "center", "right", "justify"];
-
-const modelValue = defineModel<string>();
-
-const tiptapEditor = useEditor({
-  content: modelValue.value ?? "",
-  editorProps: {
-    attributes: {
-      autocomplete: "off",
-      autocorrect: "off",
-      autocapitalize: "off",
-    },
-  },
-  extensions: [
-    TiptapStarterKit,
-    TiptapImage,
-    TiptapTaskItem.configure({ nested: true }),
-    TiptapTaskList,
-    TiptapTextAlign.configure({ types: ["heading", "paragraph"] }),
-    TiptapTypography,
-    TiptapHighlight.configure({ multicolor: true }),
-    TiptapSubscript,
-    TiptapSuperscript,
-    TiptapUnderline,
-  ],
-  onBlur({ editor }) {
-    modelValue.value = editor.getHTML();
-  },
-});
-
-const getTypography = (): string => {
-  if (!tiptapEditor.value) return "i-material-symbols-personal-places-outline";
-  for (let i = 1; i <= 6; i++) {
-    if (tiptapEditor.value.isActive("heading", { level: i })) {
-      return `i-lucide-heading-${i}`;
-    }
-  }
-  return "i-material-symbols-personal-places-outline";
-};
-
-const changeTypography = (level: Level) => {
-  if (tiptapEditor.value?.isActive("heading", { level })) {
-    tiptapEditor.value?.chain().focus().setParagraph().run();
-  } else {
-    tiptapEditor.value?.chain().focus().setHeading({ level }).run();
-  }
-};
-
-const getSelectedList = () => {
-  if (tiptapEditor.value?.isActive("bulletList")) return "bulletList";
-  if (tiptapEditor.value?.isActive("orderedList")) return "orderedList";
-  if (tiptapEditor.value?.isActive("taskList")) return "taskList";
-};
-
-const link = ref<string>();
-const setLink = () => {
-  tiptapEditor.value
-    ?.chain()
-    .focus()
-    .extendMarkRange("link")
-    .setLink({ href: link.value ?? "" })
-    .run();
-};
-
-const removeLink = () => {
-  tiptapEditor.value?.chain().focus().extendMarkRange("link").unsetLink().run();
-};
-
-const getLink = () => {
-  link.value = tiptapEditor.value?.getAttributes("link").href;
-};
-</script>
 <style scoped>
 ::v-deep(.ProseMirror:focus) {
   outline: none;
