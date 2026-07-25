@@ -7,6 +7,11 @@
       "skillPath": "skills/agent-browser/SKILL.md",
       "computedHash": "c19a532a3777698b80b35270939a1dc559da451381971b3e1e78174d1ab54863"
     },
+    "nuxt-better-auth": {
+      "source": "better-auth.nuxt.dev",
+      "sourceType": "well-known",
+      "computedHash": "cb62a8ac1df0559044ed654baac9e8d8b0f093e5b4c6ae7fea2fda8a13a612d8"
+    },
     "nuxt-ui": {
       "source": "nuxt/ui",
       "sourceType": "github",
