@@ -2,13 +2,15 @@
 
 Nuxt 4 Vue.js recipe web app. Proxies to a NestJS backend at `../chongkran-backend`.
 
+> **⚠️ Port in progress.** This app is being converted to a **full-stack Nuxt 4** app (Postgres + Drizzle + Better-Auth + Vercel Blob) by absorbing `../chongkran-backend`. The reference template is **`../web-bridge/glitch`** — already on this exact stack. See `docs/PORT_PLAN.md` for the phased plan, target stack, schema mapping, endpoint checklist, and a line-by-line **glitch-parity audit** (§3.1) that must stay green per phase. Until the port finishes, this file still describes the current proxy-based architecture. Update sections in place as each phase ships.
+
 ## Commands
 
-- `pnpm dev` — Dev server (http://localhost:3000)
-- `pnpm build` / `pnpm generate` / `pnpm preview`
-- `pnpm lint` / `pnpm lint:fix` — **oxlint** (config: `oxlint.config.ts`; `any`/empty-type/ban-types rules off)
-- `pnpm fmt` / `pnpm fmt:check` — **oxfmt** (config: `oxfmt.config.ts`; 2-space indent, double quotes, semicolons, trailing commas, 100 char width)
-- `pnpm postinstall` — runs `nuxt prepare`
+- `bun dev` — Dev server (http://localhost:3000)
+- `bun build` / `bun generate` / `bun preview`
+- `bun lint` / `bun lint:fix` — **oxlint** (config: `oxlint.config.ts`; `any`/empty-type/ban-types rules off)
+- `bun fmt` / `bun fmt:check` — **oxfmt** (config: `oxfmt.config.ts`; 2-space indent, double quotes, semicolons, trailing commas, 100 char width)
+- `bun postinstall` — runs `nuxt prepare`
 
 No test runner, no typecheck script, no CI.
 
@@ -120,9 +122,9 @@ All paginated endpoints use `{ offset, limit }` query params and return `{ meta:
 
 NestJS + MongoDB (Mongoose). Backend `.env` has `PORT=8080` and `ALLOW_ORIGIN=http://localhost:3000`.
 
-- `pnpm start:dev` — dev server with hot reload
-- `pnpm seed` — seed database (requires running backend; default password `Password123!`)
-- `pnpm test` / `pnpm test:e2e` — Jest
+- `bun start:dev` — dev server with hot reload
+- `bun seed` — seed database (requires running backend; default password `Password123!`)
+- `bun test` / `bun test:e2e` — Jest
 - `docker-compose up` — backend + MongoDB containers
 - Swagger docs at `http://localhost:8080/api/docs`
 
