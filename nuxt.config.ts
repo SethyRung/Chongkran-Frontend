@@ -5,23 +5,76 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
   compatibilityDate: "2026-03-01",
+  devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
-  modules: ["@nuxt/ui", "@pinia/nuxt", "@vueuse/nuxt", "@nuxt/test-utils/module"],
+
+  modules: [
+    "@nuxt/ui",
+    "@nuxthub/core",
+    "@vueuse/nuxt",
+    "@onmax/nuxt-better-auth",
+    "@nuxt/test-utils/module",
+  ],
+
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
-      include: ["zod"],
+      include: ["better-auth/client/plugins"],
     },
   },
+
   runtimeConfig: {
-    jwt: {
-      access: {
-        expiresIn: "",
-      },
-      refresh: {
-        expiresIn: "",
-      },
+    resend: {
+      apiKey: "",
+      fromEmail: "",
     },
-    baseURL: "",
+    public: {
+      siteUrl: "",
+    },
+  },
+
+  hub: {
+    db: {
+      dialect: "postgresql",
+      driver: process.env.DATABASE_DRIVER as any,
+      casing: "snake_case",
+    },
+    kv: true,
+  },
+
+  auth: {
+    hubSecondaryStorage: true,
+    schema: {
+      casing: "snake_case",
+    },
+    redirects: {
+      login: "/auth",
+      guest: "/",
+      authenticated: "/",
+      logout: "/auth",
+    },
+    preserveRedirect: true,
+  },
+
+  routeRules: {
+    "/admin/**": { auth: { user: { role: "admin" } } },
+    "/profile/**": { auth: "user" },
+    "/meal-plans/**": { auth: "user" },
+    "/shopping-lists/**": { auth: "user" },
+    "/auth": { auth: "guest" },
+  },
+
+  nitro: {
+    experimental: {
+      tasks: true,
+    },
+  },
+
+  fonts: {
+    families: [
+      { name: "Geist", provider: "local" },
+      { name: "Geist Mono", provider: "local" },
+      { name: "Geist Pixel", provider: "local" },
+    ],
   },
 });
