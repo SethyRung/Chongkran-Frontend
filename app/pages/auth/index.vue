@@ -10,8 +10,11 @@ const tabs = [
 
 const mode = ref<(typeof tabs)[number]["value"]>("login");
 
-function onSignupSuccess() {
-  mode.value = "login";
+function onSignupSuccess(email: string) {
+  navigateTo({
+    path: "/auth/verify-email",
+    query: { email },
+  });
 }
 
 defineShortcuts({

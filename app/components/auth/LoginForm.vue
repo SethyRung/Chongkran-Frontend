@@ -3,6 +3,7 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
 
 const toast = useToast();
+const signInEmail = useSignIn("email");
 
 const schema = z.object({
   email: z.email("Invalid email address"),
@@ -16,53 +17,32 @@ const state = reactive<Partial<Schema>>({
   password: "",
 });
 
-const loading = ref(false);
-const user = useUser();
-
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  try {
-    loading.value = true;
+  const { data } = event;
 
-    const { data } = event;
+  const result = await signInEmail.execute({
+    email: data.email,
+    password: data.password,
+  });
 
-    const res = await useApi("/api/auth/login", {
-      method: "POST",
-      body: { email: data.email, password: data.password },
-    });
-
-    if (res.status.code === ApiResponseCode.Success) {
-      const res = await useApi("/api/auth/me");
-
-      if (res.status.code === ApiResponseCode.Success) {
-        user.value = res.data;
-      }
-
-      toast.add({
-        title: "Welcome back!",
-        description: "You have been logged in successfully.",
-        color: "success",
-        icon: "i-lucide-check-circle",
-      });
-
-      await navigateTo("/");
-    } else {
-      toast.add({
-        title: "Login failed",
-        description: res.status.message || "Please check your credentials.",
-        color: "error",
-        icon: "i-lucide-alert-circle",
-      });
-    }
-  } catch {
+  if (result.error) {
     toast.add({
       title: "Login failed",
-      description: "Please check your credentials.",
+      description: result.error.message ?? "Please check your credentials.",
       color: "error",
       icon: "i-lucide-alert-circle",
     });
-  } finally {
-    loading.value = false;
+    return;
   }
+
+  toast.add({
+    title: "Welcome back!",
+    description: "You have been logged in successfully.",
+    color: "success",
+    icon: "i-lucide-check-circle",
+  });
+
+  await navigateTo("/");
 }
 </script>
 
@@ -97,7 +77,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       <ULink to="/auth" variant="soft" color="neutral"> Forgot password? </ULink>
     </div>
 
-    <UButton label="Sign in" type="submit" :loading="loading" block size="xl" />
+    <UButton label="Sign in" type="submit" :loading="signInEmail.isLoading" block size="xl" />
 
     <USeparator label="OR" />
 

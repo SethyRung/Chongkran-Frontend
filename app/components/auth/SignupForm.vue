@@ -3,6 +3,7 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
 
 const toast = useToast();
+const signUpEmail = useSignUp("email");
 const emit = defineEmits<{
   success: [email: string];
 }>();
@@ -30,51 +31,35 @@ const state = reactive<Partial<Schema>>({
   confirmPassword: "",
 });
 
-const loading = ref(false);
-
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  try {
-    loading.value = true;
+  const { data } = event;
 
-    const { data } = event;
+  const result = await signUpEmail.execute({
+    email: data.email,
+    password: data.password,
+    name: `${data.firstName} ${data.lastName}`.trim(),
+    firstName: data.firstName,
+    lastName: data.lastName,
+  });
 
-    const res = await useApi("/api/auth/signup", {
-      method: "POST",
-      body: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        password: data.password,
-      },
-    });
-
-    if (res.status.code === ApiResponseCode.Success) {
-      toast.add({
-        title: "Account created!",
-        description: "Please log in with your new account.",
-        color: "success",
-        icon: "i-lucide-check-circle",
-      });
-
-      emit("success", data.email);
-    } else {
-      toast.add({
-        title: "Signup failed",
-        description: res.status.message || "Please try again.",
-        color: "error",
-        icon: "i-lucide-alert-circle",
-      });
-    }
-  } catch {
+  if (result.error) {
     toast.add({
       title: "Signup failed",
-      description: "Please try again.",
+      description: result.error.message ?? "Please try again.",
       color: "error",
       icon: "i-lucide-alert-circle",
     });
-  } finally {
-    loading.value = false;
+    return;
   }
+
+  toast.add({
+    title: "Account created!",
+    description: "Check your inbox to verify your email.",
+    color: "success",
+    icon: "i-lucide-check-circle",
+  });
+
+  emit("success", data.email);
 }
 </script>
 
@@ -143,6 +128,12 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       <UCheckbox label="I agree to the Terms of Service and Privacy Policy" required />
     </UFormField>
 
-    <UButton type="submit" label="Create account" :loading="loading" block size="xl" />
+    <UButton
+      type="submit"
+      label="Create account"
+      :loading="signUpEmail.isLoading"
+      block
+      size="xl"
+    />
   </UForm>
 </template>

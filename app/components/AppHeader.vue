@@ -2,7 +2,7 @@
 import type { NavigationMenuItem } from "@nuxt/ui";
 
 const route = useRoute();
-const user = useUser();
+const { user, signOut } = useUserSession();
 
 function isActive(to: string) {
   if (to === "/") return route.path === "/";
@@ -46,11 +46,8 @@ const userMenuItems = computed(() => [
 ]);
 
 async function logout() {
-  const res = await useApi("/api/auth/logout");
-  if (res.status.code === ApiResponseCode.Success) {
-    user.value = null;
-    await navigateTo("/auth");
-  }
+  await signOut();
+  await navigateTo("/auth");
 }
 </script>
 
@@ -87,7 +84,7 @@ async function logout() {
             <UUser
               :name="`${user.firstName} ${user.lastName}`"
               :avatar="{
-                src: user.avatar,
+                src: user.image,
                 loading: 'lazy',
               }"
               :ui="{
