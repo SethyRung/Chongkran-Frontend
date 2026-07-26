@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
 
-const user = useUser();
+const { user } = useUserSession();
 const route = useRoute();
 
 const items = computed<NavigationMenuItem[]>(() => [
@@ -32,7 +32,7 @@ const items = computed<NavigationMenuItem[]>(() => [
       >
         <div class="flex flex-col items-center gap-6 sm:flex-row">
           <UAvatar
-            :src="user?.avatar"
+            :src="user?.image"
             :alt="`${user?.firstName} ${user?.lastName}`"
             size="3xl"
             icon="i-lucide-user"

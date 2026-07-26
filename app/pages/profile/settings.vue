@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { UserResponse } from "#server/types";
 
 const toast = useToast();
-const user = useUser();
+const { user, fetchSession } = useUserSession();
 const loading = ref(false);
 const avatarFile = ref<File | undefined>(undefined);
 
@@ -28,7 +28,7 @@ const avatarPreview = computed(() => {
   if (avatarFile.value) {
     return URL.createObjectURL(avatarFile.value);
   }
-  return user.value?.avatar;
+  return user.value?.image;
 });
 
 const bioCount = computed(() => state.bio?.length ?? 0);
@@ -63,11 +63,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     });
 
     if (res.status.code === ApiResponseCode.Success) {
-      const meRes = await useApi("/api/auth/me");
-
-      if (meRes.status.code === ApiResponseCode.Success) {
-        user.value = meRes.data;
-      }
+      await fetchSession({ force: true });
 
       avatarFile.value = undefined;
 

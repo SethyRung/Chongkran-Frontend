@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const route = useRoute();
 const router = useRouter();
-const user = useUser();
+const { user } = useUserSession();
 
 const searchQuery = ref((route.query.search as string) || "");
 const selectedCategory = ref((route.query.category as string) || "");

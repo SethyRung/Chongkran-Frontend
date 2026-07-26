@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
 
-const user = useUser();
+const { user } = useUserSession();
 const route = useRoute();
 
 const navItems = computed<NavigationMenuItem[][]>(() => [
@@ -74,7 +74,7 @@ const navItems = computed<NavigationMenuItem[][]>(() => [
 
       <template #footer="{ collapsed }">
         <UAvatar
-          :src="user?.avatar"
+          :src="user?.image"
           :alt="`${user?.firstName} ${user?.lastName}`"
           size="sm"
           icon="i-lucide:user"

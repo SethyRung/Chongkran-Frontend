@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-const user = useUser();
 const toast = useToast();
 
 const page = ref(1);

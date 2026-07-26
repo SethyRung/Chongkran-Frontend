@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const user = useUser();
+const { user } = useUserSession();
 
 const { data: stats } = await useFetchApi(`/api/follows/stats/${user.value?.id}`, {
   lazy: true,

@@ -3,7 +3,7 @@ import type { RecipeResponse } from "#server/types";
 
 const route = useRoute();
 const recipeId = computed(() => route.params.id as string);
-const user = useUser();
+const { user, fetchSession } = useUserSession();
 const toast = useToast();
 
 const { data: recipeRes, refresh } = await useFetchApi<ApiResponse<RecipeResponse>>(
@@ -22,11 +22,7 @@ const recipe = computed<Recipe | null>(() => {
 
 async function refreshUser() {
   try {
-    const res = await useApi<ApiResponse<User>>("/api/auth/me");
-    if (res.status.code === ApiResponseCode.Success) {
-      const user = useUser();
-      user.value = res.data;
-    }
+    await fetchSession({ force: true });
   } catch {}
 }
 
@@ -73,10 +69,9 @@ const isLiked = computed(() => {
   if (!user.value || !recipe.value) return false;
   return recipe.value.likedUserIds?.includes(user.value.id) ?? false;
 });
-const isSaved = computed(() => {
-  if (!user.value || !recipe.value) return false;
-  return user.value.favoriteRecipes?.includes(recipe.value.id) ?? false;
-});
+// TODO: replace with GET /api/favorites/:recipeId/check once Phase 3 lands.
+// `favoriteRecipes` was denormalized on User; now lives in the `favorites` join table.
+const isSaved = ref(false);
 
 const likeLoading = ref(false);
 const saveLoading = ref(false);
