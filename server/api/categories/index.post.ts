@@ -1,10 +1,36 @@
-import type { CreateCategoryDto, CategoryResponse } from "#server/types";
+import { z } from "zod";
+import { db } from "@nuxthub/db";
+import { categories } from "hub:db:schema";
+import { CategoryResponse } from "~~/server/types";
 
-export default defineEventHandler(async (event) => {
-  const body = await readBody<CreateCategoryDto>(event);
+const createCategorySchema = z.object({
+  name: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
+});
 
-  return proxy<CategoryResponse>(event, "/categories", {
-    method: "post",
-    body,
-  });
+export default defineEventHandler(async (event): Promise<ApiResponse<CategoryResponse>> => {
+  await requireAdmin(event);
+
+  const body = await readValidatedBody(event, createCategorySchema.parse);
+  const id = crypto.randomUUID();
+
+  const [row] = await db
+    .insert(categories)
+    .values({
+      id,
+      name: body.name,
+      description: body.description ?? null,
+    })
+    .returning();
+
+  return createResponse(
+    { code: ApiResponseCode.Success },
+    {
+      id: row.id,
+      name: row.name,
+      description: row.description ?? undefined,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    },
+  );
 });
