@@ -23,6 +23,13 @@ export default defineEventHandler(async (event): Promise<ApiResponse<CategoryRes
     })
     .returning();
 
+  if (!row) {
+    return createResponse({
+      code: ApiResponseCode.InternalError,
+      message: "Failed to create category",
+    });
+  }
+
   return createResponse(
     { code: ApiResponseCode.Success },
     {

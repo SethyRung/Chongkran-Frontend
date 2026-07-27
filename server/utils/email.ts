@@ -69,7 +69,7 @@ function renderTemplate(options: {
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center" style="padding:4px 0;">
-                    <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:14px 28px;background-color:#eab308;color:#18181b;text-decoration:none;font-weight:600;font-size:16px;border-radius:8px;">${escapeHtml(buttonText)}</a>
+                    <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:14px 28px;background-color:#eab308;color:#18181b;text-decoration:none;font-weight:600;font-size:16px;border-radius:8px;">${escapeHtml(options.buttonText)}</a>
                   </td>
                 </tr>
               </table>

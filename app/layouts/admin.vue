@@ -4,6 +4,10 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 const { user } = useUserSession();
 const route = useRoute();
 
+const displayName = computed(() =>
+  `${user.value?.firstName ?? ""} ${user.value?.lastName ?? ""}`.trim(),
+);
+
 const navItems = computed<NavigationMenuItem[][]>(() => [
   [
     {
@@ -74,15 +78,15 @@ const navItems = computed<NavigationMenuItem[][]>(() => [
 
       <template #footer="{ collapsed }">
         <UAvatar
-          :src="user?.image"
-          :alt="`${user?.firstName} ${user?.lastName}`"
+          :src="user?.image ?? undefined"
+          :alt="displayName"
           size="sm"
           icon="i-lucide:user"
         />
 
         <div v-if="!collapsed" class="flex-1 min-w-0">
           <p class="truncate text-sm font-medium text-default">
-            {{ user?.firstName }} {{ user?.lastName }}
+            {{ displayName }}
           </p>
           <p class="truncate text-xs text-muted">{{ user?.email }}</p>
         </div>

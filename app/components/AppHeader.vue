@@ -4,6 +4,10 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 const route = useRoute();
 const { user, signOut } = useUserSession();
 
+const displayName = computed(() =>
+  `${user.value?.firstName ?? ""} ${user.value?.lastName ?? ""}`.trim(),
+);
+
 function isActive(to: string) {
   if (to === "/") return route.path === "/";
   return route.path.startsWith(to);
@@ -82,9 +86,9 @@ async function logout() {
             }"
           >
             <UUser
-              :name="`${user.firstName} ${user.lastName}`"
+              :name="displayName"
               :avatar="{
-                src: user.image,
+                src: user.image ?? undefined,
                 loading: 'lazy',
               }"
               :ui="{

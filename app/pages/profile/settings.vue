@@ -8,6 +8,10 @@ const { user, fetchSession } = useUserSession();
 const loading = ref(false);
 const avatarFile = ref<File | undefined>(undefined);
 
+const displayName = computed(() =>
+  `${user.value?.firstName ?? ""} ${user.value?.lastName ?? ""}`.trim(),
+);
+
 const schema = z.object({
   firstName: z.string().trim().min(1, "First name must be at least 2 characters"),
   lastName: z.string().trim().min(1, "Last name must be at least 2 characters"),
@@ -28,7 +32,7 @@ const avatarPreview = computed(() => {
   if (avatarFile.value) {
     return URL.createObjectURL(avatarFile.value);
   }
-  return user.value?.image;
+  return user.value?.image ?? undefined;
 });
 
 const bioCount = computed(() => state.bio?.length ?? 0);
@@ -111,7 +115,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             <div class="group relative cursor-pointer" @click="open()">
               <UAvatar
                 :src="avatarPreview"
-                :alt="`${user?.firstName} ${user?.lastName}`"
+                :alt="displayName"
                 size="3xl"
                 icon="i-lucide-user"
                 :ui="{ root: 'ring-2 ring-primary/20' }"
@@ -124,7 +128,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             </div>
 
             <div class="flex-1 text-center sm:text-left">
-              <h3 class="text-lg font-semibold">{{ user?.firstName }} {{ user?.lastName }}</h3>
+              <h3 class="text-lg font-semibold">{{ displayName }}</h3>
               <p class="text-sm text-muted">{{ user?.email }}</p>
               <div class="mt-2 flex flex-wrap justify-center gap-2 sm:justify-start">
                 <UButton

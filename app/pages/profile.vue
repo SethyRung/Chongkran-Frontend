@@ -4,6 +4,10 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 const { user } = useUserSession();
 const route = useRoute();
 
+const displayName = computed(() =>
+  `${user.value?.firstName ?? ""} ${user.value?.lastName ?? ""}`.trim(),
+);
+
 const items = computed<NavigationMenuItem[]>(() => [
   {
     label: "Overview",
@@ -32,8 +36,8 @@ const items = computed<NavigationMenuItem[]>(() => [
       >
         <div class="flex flex-col items-center gap-6 sm:flex-row">
           <UAvatar
-            :src="user?.image"
-            :alt="`${user?.firstName} ${user?.lastName}`"
+            :src="user?.image ?? undefined"
+            :alt="displayName"
             size="3xl"
             icon="i-lucide-user"
             :ui="{
@@ -43,7 +47,7 @@ const items = computed<NavigationMenuItem[]>(() => [
 
           <div class="flex-1 text-center sm:text-left">
             <h1 class="text-2xl font-bold md:text-3xl">
-              {{ user?.firstName }} {{ user?.lastName }}
+              {{ displayName }}
             </h1>
             <p class="mt-1 text-muted">{{ user?.email }}</p>
             <UBadge
