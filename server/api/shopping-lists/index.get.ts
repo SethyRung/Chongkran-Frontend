@@ -1,11 +1,27 @@
-import type { ShoppingListResponse } from "#server/types";
+import { eq } from "drizzle-orm";
+import { shoppingLists } from "hub:db:schema";
+import type { ShoppingListResponse } from "~~/server/types";
 
-export default defineEventHandler(async (event) => {
-  const query = getQuery(event);
-  const offset = Number(query.offset) || 0;
-  const limit = Number(query.limit) || 10;
+export default defineEventHandler(async (event): Promise<ApiResponse<ShoppingListResponse>> => {
+  const { user: sessionUser } = await requireUserSession(event);
 
-  return proxy<ShoppingListResponse[]>(event, "/shopping-lists", {
-    query: { offset, limit },
-  });
+  const [row] = await db
+    .select()
+    .from(shoppingLists)
+    .where(eq(shoppingLists.userId, sessionUser.id))
+    .limit(1);
+
+  if (!row) {
+    return createResponse({ code: ApiResponseCode.NotFound, message: "List not found." });
+  }
+
+  return createResponse(
+    { code: ApiResponseCode.Success },
+    {
+      id: row.id,
+      userId: row.userId,
+      items: row.items,
+      createdAt: row.createdAt.toISOString(),
+    },
+  );
 });
