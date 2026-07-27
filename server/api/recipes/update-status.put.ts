@@ -1,22 +1,41 @@
-import type { RecipeResponse } from "#server/types";
+import { eq } from "drizzle-orm";
+import { recipes } from "hub:db:schema";
+import { aggregateLikesForRecipes, formatRecipeResponse } from "~~/server/utils/recipe";
+import type { RecipeResponse } from "~~/server/types";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<ApiResponse<RecipeResponse>> => {
+  await requireAdmin(event);
+
   const query = getQuery(event);
-  const id = query.id as string;
-  const status = query.status as string;
+  const id = typeof query.id === "string" ? query.id : "";
+  const status = query.status as "pending" | "approved" | "rejected" | undefined;
 
-  if (!id || !status) {
-    return createResponse(
-      {
-        code: ApiResponseCode.ValidationError,
-        message: "Recipe ID and status are required",
-      },
-      null,
-    );
+  if (!id) {
+    return createResponse({
+      code: ApiResponseCode.InvalidRequest,
+      message: "Recipe id is required",
+    });
+  }
+  if (status !== "pending" && status !== "approved" && status !== "rejected") {
+    return createResponse({
+      code: ApiResponseCode.InvalidRequest,
+      message: "Status must be 'pending', 'approved', or 'rejected'",
+    });
   }
 
-  return proxy<RecipeResponse>(event, "/recipes/update-status", {
-    method: "put",
-    query: { id, status },
-  });
+  const [row] = await db.update(recipes).set({ status }).where(eq(recipes.id, id)).returning();
+
+  if (!row) {
+    return createResponse({
+      code: ApiResponseCode.NotFound,
+      message: "Recipe not found. Please check the information and try again.",
+    });
+  }
+
+  const likesMap = await aggregateLikesForRecipes([row.id]);
+
+  return createResponse(
+    { code: ApiResponseCode.Success },
+    formatRecipeResponse(row, likesMap.get(row.id)),
+  );
 });

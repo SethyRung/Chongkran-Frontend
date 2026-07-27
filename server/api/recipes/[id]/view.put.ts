@@ -1,17 +1,19 @@
-export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, "id");
+import { eq, sql } from "drizzle-orm";
+import { recipes } from "hub:db:schema";
 
+export default defineEventHandler(async (event): Promise<ApiResponse<null>> => {
+  const id = getRouterParam(event, "id");
   if (!id) {
-    return createResponse(
-      {
-        code: ApiResponseCode.ValidationError,
-        message: "Recipe ID is required",
-      },
-      null,
-    );
+    return createResponse({
+      code: ApiResponseCode.InvalidRequest,
+      message: "Recipe id is required",
+    });
   }
 
-  return proxy<string>(event, `/recipes/${id}/view`, {
-    method: "put",
-  });
+  await db
+    .update(recipes)
+    .set({ views: sql`${recipes.views} + 1` })
+    .where(eq(recipes.id, id));
+
+  return createResponse({ code: ApiResponseCode.Success }, null);
 });

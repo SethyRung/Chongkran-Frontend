@@ -1,4 +1,5 @@
 import type { H3Event } from "h3";
+import type { Role } from "#shared/types";
 
 /**
  * Require the current session to belong to an admin user.
@@ -9,5 +10,15 @@ import type { H3Event } from "h3";
 export async function requireAdmin(event: H3Event) {
   return requireUserSession(event, {
     user: { role: "admin" },
+  });
+}
+
+/**
+ * Require the current session to belong to a user with one of the given roles.
+ * Single role or array of allowed roles.
+ */
+export async function requireRole(event: H3Event, role: Role | Role[]) {
+  return requireUserSession(event, {
+    user: { role },
   });
 }
