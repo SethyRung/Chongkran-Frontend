@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { shoppingLists } from "hub:db:schema";
-import type { ShoppingListResponse } from "~~/server/types";
+import type { ShoppingListResponse } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<ShoppingListResponse>> => {
   const { user: sessionUser } = await requireSession(event);

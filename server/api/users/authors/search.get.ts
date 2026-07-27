@@ -1,7 +1,7 @@
 import { and, desc, eq, ilike, or } from "drizzle-orm";
 import { user } from "hub:db:schema";
 import { formatUserResponse } from "~~/server/utils/user";
-import type { UserResponse } from "~~/server/types";
+import type { UserResponse } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<UserResponse[]>> => {
   await requireSession(event);

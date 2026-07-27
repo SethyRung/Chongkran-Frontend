@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { h } from "vue";
 import type { TableColumn } from "@nuxt/ui";
-import type { RecipeResponse } from "#server/types";
+import type { RecipeResponse } from "#shared/types";
 
 definePageMeta({ layout: "admin" });
 
@@ -34,14 +34,16 @@ const {
   data: recipesData,
   pending,
   refresh,
-} = await useFetchApi("/api/recipes", {
+} = await useFetch("/api/recipes", {
   query: {
     offset,
     limit,
   },
 });
 
-const total = computed(() => recipesData.value?.meta?.total ?? 0);
+const total = computed(() =>
+  isSuccessResponse(recipesData.value) ? (recipesData.value.meta?.total ?? 0) : 0,
+);
 const recipes = computed(() => recipesData.value?.data ?? []);
 
 const table = useTemplateRef("table");
@@ -200,7 +202,7 @@ async function executeAction() {
     const { id, action } = confirmAction.value;
 
     if (action === "delete") {
-      const res = await useApi<ApiResponse<RecipeResponse>>(`/api/recipes/${id}`, {
+      const res = await $fetch<ApiResponse<RecipeResponse>>(`/api/recipes/${id}`, {
         method: "DELETE",
       });
       if (res.status.code === ApiResponseCode.Success) {
@@ -218,7 +220,7 @@ async function executeAction() {
         });
       }
     } else {
-      const res = await useApi<ApiResponse<RecipeResponse>>(
+      const res = await $fetch<ApiResponse<RecipeResponse>>(
         `/api/recipes/update-status?id=${id}&status=${action}`,
         {
           method: "PUT",

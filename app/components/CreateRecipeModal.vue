@@ -55,9 +55,10 @@ const difficultyOptions = [
   { label: "Hard", value: "hard" },
 ];
 
-const { data: categories, execute } = await useFetchApi("/api/categories", {
+const { data: categories, execute } = await useFetch("/api/categories", {
   lazy: true,
   immediate: false,
+  default: () => [],
   transform: (res) => (res.status.code === ApiResponseCode.Success ? res.data : []),
 });
 
@@ -105,7 +106,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     const formData = new FormData();
     formData.append("file", data.image);
 
-    const uploadRes = await useApi("/api/upload", {
+    const uploadRes = await $fetch("/api/upload", {
       method: "POST",
       body: formData,
     });
@@ -120,7 +121,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       return;
     }
 
-    const res = await useApi("/api/recipes", {
+    const res = await $fetch("/api/recipes", {
       method: "POST",
       body: {
         ...data,
@@ -209,7 +210,7 @@ function resetForm() {
             <UFormField name="category" label="Category" required>
               <USelectMenu
                 v-model="state.category"
-                :items="categories"
+                :items="categories ?? []"
                 placeholder="Select category"
                 label-key="name"
                 value-key="id"

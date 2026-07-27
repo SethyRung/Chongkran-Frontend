@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { data, pending } = await useFetchApi("/api/recipes/my", {
+const { data, pending } = await useFetch("/api/recipes/my", {
   query: {
     status: "all",
   },

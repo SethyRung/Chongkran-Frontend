@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { h } from "vue";
 import type { TableColumn } from "@nuxt/ui";
-import type { MealPlanResponse } from "#server/types";
+import type { MealPlanResponse } from "#shared/types";
 
 definePageMeta({ layout: "admin" });
 
@@ -26,14 +26,16 @@ const {
   data: mealPlansData,
   pending,
   refresh,
-} = await useFetchApi("/api/meal-plans", {
+} = await useFetch("/api/meal-plans", {
   query: {
     offset,
     limit,
   },
 });
 
-const total = computed(() => mealPlansData.value?.meta?.total ?? 0);
+const total = computed(() =>
+  isSuccessResponse(mealPlansData.value) ? (mealPlansData.value.meta?.total ?? 0) : 0,
+);
 const mealPlans = computed(() => mealPlansData.value?.data ?? []);
 
 function formatDate(dateStr?: string) {
@@ -81,7 +83,7 @@ async function executeAction() {
   if (!confirmAction.value) return;
 
   try {
-    const res = await useApi<ApiResponse<string>>(`/api/meal-plans/${confirmAction.value.id}`, {
+    const res = await $fetch<ApiResponse<string>>(`/api/meal-plans/${confirmAction.value.id}`, {
       method: "DELETE",
     });
 

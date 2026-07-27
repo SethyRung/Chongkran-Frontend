@@ -3,7 +3,7 @@ import type { FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
 
 interface MealPlanFormModalProps {
-  mealPlan?: MealPlan;
+  mealPlan?: MealPlanResponse;
 }
 
 const props = defineProps<MealPlanFormModalProps>();
@@ -54,7 +54,7 @@ const state = reactive<
   recipes: [{}],
 });
 
-const { data: recipesData, execute: fetchRecipes } = await useFetchApi<ApiResponse<Recipe[]>>(
+const { data: recipesData, execute: fetchRecipes } = await useFetch<ApiResponse<RecipeResponse[]>>(
   "/api/recipes",
   {
     lazy: true,
@@ -124,12 +124,12 @@ async function onSubmit(_event: FormSubmitEvent<Schema>) {
     let res: ApiResponse<unknown>;
 
     if (isEditing.value) {
-      res = await useApi(`/api/meal-plans/${props.mealPlan!.id}`, {
+      res = await $fetch(`/api/meal-plans/${props.mealPlan!.id}`, {
         method: "PATCH",
         body,
       });
     } else {
-      res = await useApi("/api/meal-plans", {
+      res = await $fetch("/api/meal-plans", {
         method: "POST",
         body,
       });

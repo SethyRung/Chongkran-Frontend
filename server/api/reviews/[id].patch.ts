@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { reviews } from "hub:db:schema";
 import { formatReviewResponse } from "~~/server/utils/review";
-import type { ReviewResponse } from "~~/server/types";
+import type { ReviewResponse } from "#shared/types";
 
 const updateReviewSchema = z.object({
   rating: z.number().int().min(1).max(5).optional(),

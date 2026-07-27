@@ -1,6 +1,6 @@
 import { and, count, desc, eq, isNotNull, type SQL } from "drizzle-orm";
 import { user } from "hub:db:schema";
-import type { AuthorRequestResponse } from "~~/server/types";
+import type { AuthorRequestResponse } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<AuthorRequestResponse[]>> => {
   await requireAdmin(event);

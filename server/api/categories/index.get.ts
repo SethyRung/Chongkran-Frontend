@@ -1,7 +1,7 @@
 import { and, count, desc, eq, ilike } from "drizzle-orm";
 import { db } from "@nuxthub/db";
 import { categories } from "hub:db:schema";
-import { CategoryResponse } from "~~/server/types";
+import type { CategoryResponse } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<CategoryResponse[]>> => {
   const query = getQuery(event);

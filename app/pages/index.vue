@@ -8,7 +8,7 @@ const categoryIcons = {
   Salads: "i-lucide-leaf",
 };
 
-const featuredRecipes = ref<Recipe[]>([
+const featuredRecipes = ref<RecipeResponse[]>([
   {
     id: "1",
     title: "Classic Spaghetti Carbonara",
@@ -116,7 +116,7 @@ const featuredRecipes = ref<Recipe[]>([
   },
 ]);
 
-const categories = ref<Category[]>([
+const categories = ref<CategoryResponse[]>([
   { id: "c1", name: "Pasta", description: "Italian pasta dishes", createdAt: "", updatedAt: "" },
   { id: "c2", name: "Asian", description: "Asian cuisine", createdAt: "", updatedAt: "" },
   { id: "c3", name: "American", description: "American classics", createdAt: "", updatedAt: "" },

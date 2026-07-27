@@ -3,7 +3,7 @@ import { h } from "vue";
 import type { TableColumn } from "@nuxt/ui";
 import type { FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
-import type { CategoryResponse } from "#server/types";
+import type { CategoryResponse } from "#shared/types";
 
 definePageMeta({ layout: "admin" });
 
@@ -29,14 +29,16 @@ const {
   data: categoriesData,
   pending,
   refresh,
-} = await useFetchApi("/api/categories", {
+} = await useFetch("/api/categories", {
   query: {
     offset,
     limit,
   },
 });
 
-const total = computed(() => categoriesData.value?.meta?.total ?? 0);
+const total = computed(() =>
+  isSuccessResponse(categoriesData.value) ? (categoriesData.value.meta?.total ?? 0) : 0,
+);
 const categories = computed(() => categoriesData.value?.data ?? []);
 
 function formatDate(dateStr?: string) {
@@ -104,7 +106,7 @@ async function onFormSubmit(event: FormSubmitEvent<Schema>) {
     let res;
 
     if (editingCategory.value) {
-      res = await useApi<ApiResponse<CategoryResponse>>(
+      res = await $fetch<ApiResponse<CategoryResponse>>(
         `/api/categories/${editingCategory.value.id}`,
         {
           method: "PATCH",
@@ -112,7 +114,7 @@ async function onFormSubmit(event: FormSubmitEvent<Schema>) {
         },
       );
     } else {
-      res = await useApi<ApiResponse<CategoryResponse>>("/api/categories", {
+      res = await $fetch<ApiResponse<CategoryResponse>>("/api/categories", {
         method: "POST",
         body: data,
       });
@@ -152,7 +154,7 @@ async function executeAction() {
   try {
     const { id } = confirmAction.value;
 
-    const res = await useApi<ApiResponse<CategoryResponse>>(`/api/categories/${id}`, {
+    const res = await $fetch<ApiResponse<CategoryResponse>>(`/api/categories/${id}`, {
       method: "DELETE",
     });
 

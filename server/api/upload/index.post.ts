@@ -1,5 +1,5 @@
 import { put } from "@vercel/blob";
-import type { UploadResponse } from "~~/server/types";
+import type { UploadResponse } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<UploadResponse>> => {
   const { user: sessionUser } = await requireSession(event);

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { h } from "vue";
 import type { TableColumn } from "@nuxt/ui";
-import type { AuthorRequest } from "#shared/types";
+import type { AuthorRequestResponse } from "#shared/types";
 
 definePageMeta({ layout: "admin" });
 
@@ -34,7 +34,7 @@ const {
   data: requestsData,
   pending,
   refresh,
-} = await useFetchApi("/api/users/authors/requests", {
+} = await useFetch("/api/users/authors/requests", {
   query: {
     offset,
     limit,
@@ -42,7 +42,9 @@ const {
   },
 });
 
-const total = computed(() => requestsData.value?.meta?.total ?? 0);
+const total = computed(() =>
+  isSuccessResponse(requestsData.value) ? (requestsData.value.meta?.total ?? 0) : 0,
+);
 const requests = computed(() => requestsData.value?.data ?? []);
 
 function statusColor(s?: string) {
@@ -81,7 +83,7 @@ async function executeAction() {
   try {
     const { id, action } = confirmAction.value;
 
-    const res = await useApi<ApiResponse<string>>(`/api/users/authors/requests/${id}/${action}`, {
+    const res = await $fetch<ApiResponse<string>>(`/api/users/authors/requests/${id}/${action}`, {
       method: "PATCH",
     });
 
@@ -113,7 +115,7 @@ async function executeAction() {
   }
 }
 
-const columns: TableColumn<AuthorRequest>[] = [
+const columns: TableColumn<AuthorRequestResponse>[] = [
   {
     accessorKey: "firstName",
     header: "User",

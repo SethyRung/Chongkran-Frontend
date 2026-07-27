@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const categories = ref<Category[]>([
+const categories = ref<CategoryResponse[]>([
   {
     id: "c1",
     name: "Pasta",

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { recipes, user } from "hub:db:schema";
 import { Role } from "#shared/types";
 import { formatRecipeResponse } from "~~/server/utils/recipe";
-import type { RecipeResponse } from "~~/server/types";
+import type { RecipeResponse } from "#shared/types";
 
 const ingredientSchema = z.object({
   name: z.string().min(1),

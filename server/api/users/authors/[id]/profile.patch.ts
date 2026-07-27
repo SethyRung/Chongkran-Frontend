@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { user } from "hub:db:schema";
 import { formatUserResponse } from "~~/server/utils/user";
-import type { UpdateAuthorProfileDto, UserResponse } from "~~/server/types";
+import type { UpdateAuthorProfileDto, UserResponse } from "#shared/types";
 
 const allowedKeys = [
   "bio",

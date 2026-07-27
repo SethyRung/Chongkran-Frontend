@@ -187,6 +187,17 @@ export const shoppingLists = pgTable("shopping_lists", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Inferred row types for internal server use (queries, transforms).
+export type CategoryRow = typeof categories.$inferSelect;
+export type RecipeRow = typeof recipes.$inferSelect;
+export type RecipeLikeRow = typeof recipeLikes.$inferSelect;
+export type RecipeViewRow = typeof recipeViews.$inferSelect;
+export type ReviewRow = typeof reviews.$inferSelect;
+export type FavoriteRow = typeof favorites.$inferSelect;
+export type FollowRow = typeof follows.$inferSelect;
+export type MealPlanRow = typeof mealPlans.$inferSelect;
+export type ShoppingListRow = typeof shoppingLists.$inferSelect;
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),

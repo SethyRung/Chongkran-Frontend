@@ -9,7 +9,7 @@ const {
   pending,
   refresh,
 } = await useAsyncData("shopping-list", async () => {
-  const res = await useApi<ApiResponse<ShoppingList>>("/api/shopping-lists");
+  const res = await $fetch<ApiResponse<ShoppingListResponse>>("/api/shopping-lists");
   if (isSuccessResponse(res)) return res.data;
   return null;
 });
@@ -35,7 +35,7 @@ const saving = ref(false);
 async function createList(initialItems?: ShoppingItem[]) {
   try {
     saving.value = true;
-    const res = await useApi<ApiResponse<ShoppingList>>("/api/shopping-lists", {
+    const res = await $fetch<ApiResponse<ShoppingListResponse>>("/api/shopping-lists", {
       method: "POST",
       body: { items: initialItems ?? [] },
     });
@@ -64,7 +64,7 @@ async function createList(initialItems?: ShoppingItem[]) {
 async function updateItems(updatedItems: ShoppingItem[]) {
   if (!shoppingList.value) return;
   try {
-    const res = await useApi<ApiResponse<ShoppingList>>("/api/shopping-lists", {
+    const res = await $fetch<ApiResponse<ShoppingListResponse>>("/api/shopping-lists", {
       method: "PATCH",
       body: { items: updatedItems },
     });
@@ -118,7 +118,7 @@ async function removeItem(index: number) {
 
 async function deleteList() {
   try {
-    const res = await useApi<ApiResponse<string>>("/api/shopping-lists", {
+    const res = await $fetch<ApiResponse<string>>("/api/shopping-lists", {
       method: "DELETE",
     });
     if (res.status.code === ApiResponseCode.Success) {

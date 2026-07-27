@@ -9,7 +9,7 @@ const selectedCategory = ref((route.query.category as string) || "");
 const selectedDifficulty = ref((route.query.difficulty as string) || "");
 const currentPage = ref(Number(route.query.page) || 1);
 
-const { data: categoriesRes } = await useFetchApi<ApiResponse<Category[]>>("/api/categories", {
+const { data: categoriesRes } = await useFetch<ApiResponse<CategoryResponse[]>>("/api/categories", {
   query: { offset: 0, limit: 100 },
 });
 const categories = computed(() => categoriesRes.value?.data ?? []);
@@ -18,7 +18,7 @@ const {
   data: recipesRes,
   pending: recipesPending,
   refresh: refreshRecipes,
-} = await useFetchApi<ApiResponse<Recipe[]>>("/api/recipes", {
+} = await useFetch<ApiResponse<RecipeResponse[]>>("/api/recipes", {
   query: computed(() => ({
     offset: 0,
     limit: 100,

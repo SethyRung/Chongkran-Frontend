@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { h } from "vue";
 import type { TableColumn } from "@nuxt/ui";
-import type { ShoppingListResponse } from "#server/types";
+import type { ShoppingListResponse } from "#shared/types";
 
 definePageMeta({ layout: "admin" });
 
@@ -26,15 +26,20 @@ const {
   data: shoppingListsData,
   pending,
   refresh,
-} = await useFetchApi("/api/shopping-lists", {
+} = await useFetch("/api/shopping-lists", {
   query: {
     offset,
     limit,
   },
 });
 
-const total = computed(() => shoppingListsData.value?.meta?.total ?? 0);
-const shoppingLists = computed(() => shoppingListsData.value?.data ?? []);
+const total = computed(() =>
+  isSuccessResponse(shoppingListsData.value) ? (shoppingListsData.value.meta?.total ?? 0) : 0,
+);
+const shoppingLists = computed<ShoppingListResponse[]>(() => {
+  const data = shoppingListsData.value?.data;
+  return data ? [data] : [];
+});
 
 function formatDate(dateStr?: string) {
   if (!dateStr) return "";
@@ -81,7 +86,7 @@ async function executeAction() {
   if (!confirmAction.value) return;
 
   try {
-    const res = await useApi<ApiResponse<string>>(`/api/shopping-lists/${confirmAction.value.id}`, {
+    const res = await $fetch<ApiResponse<string>>(`/api/shopping-lists/${confirmAction.value.id}`, {
       method: "DELETE",
     });
 

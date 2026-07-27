@@ -34,18 +34,17 @@ const state = reactive<Partial<Schema>>({
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   const { data } = event;
 
-  const result = await signUpEmail.execute({
+  await signUpEmail.execute({
     email: data.email,
     password: data.password,
     name: `${data.firstName} ${data.lastName}`.trim(),
-    firstName: data.firstName,
-    lastName: data.lastName,
+    ...({ firstName: data.firstName, lastName: data.lastName } as Record<string, unknown>),
   });
 
-  if (result.error) {
+  if (signUpEmail.error.value) {
     toast.add({
       title: "Signup failed",
-      description: result.error.message ?? "Please try again.",
+      description: signUpEmail.error.value.message ?? "Please try again.",
       color: "error",
       icon: "i-lucide-alert-circle",
     });
@@ -131,7 +130,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     <UButton
       type="submit"
       label="Create account"
-      :loading="signUpEmail.isLoading"
+      :loading="signUpEmail.status.value === 'pending'"
       block
       size="xl"
     />

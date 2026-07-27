@@ -3,7 +3,7 @@ import { h } from "vue";
 import type { TableColumn } from "@nuxt/ui";
 import type { FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
-import type { FollowStatsResponse, UserResponse } from "#server/types";
+import type { FollowStatsResponse, UserResponse } from "#shared/types";
 
 definePageMeta({ layout: "admin" });
 
@@ -38,14 +38,16 @@ const {
   data: usersData,
   pending,
   refresh,
-} = await useFetchApi<ApiResponse<UserResponse[]>>("/api/users", {
+} = await useFetch<ApiResponse<UserResponse[]>>("/api/users", {
   query: {
     offset,
     limit,
   },
 });
 
-const total = computed(() => usersData.value?.meta?.total ?? 0);
+const total = computed(() =>
+  isSuccessResponse(usersData.value) ? (usersData.value.meta?.total ?? 0) : 0,
+);
 const users = computed(() => usersData.value?.data ?? []);
 
 const filteredUsers = computed(() => {
@@ -85,7 +87,7 @@ watch(
         followStatsLoading[id] = true;
 
         try {
-          const res = await useApi<ApiResponse<FollowStatsResponse>>(`/api/follows/stats/${id}`);
+          const res = await $fetch<ApiResponse<FollowStatsResponse>>(`/api/follows/stats/${id}`);
 
           if (res.status.code === ApiResponseCode.Success) {
             followStatsByUser[id] = res.data;
@@ -217,7 +219,7 @@ async function onEditSubmit(event: FormSubmitEvent<Schema>) {
     editLoading.value = true;
     const { data } = event;
 
-    const res = await useApi<ApiResponse<UserResponse>>(`/api/users/${editingUser.value.id}`, {
+    const res = await $fetch<ApiResponse<UserResponse>>(`/api/users/${editingUser.value.id}`, {
       method: "PATCH",
       body: {
         ...data,
@@ -259,7 +261,7 @@ async function executeAction() {
   try {
     const { id } = confirmAction.value;
 
-    const res = await useApi<ApiResponse<UserResponse>>(`/api/users/${id}`, {
+    const res = await $fetch<ApiResponse<UserResponse>>(`/api/users/${id}`, {
       method: "DELETE",
     });
 

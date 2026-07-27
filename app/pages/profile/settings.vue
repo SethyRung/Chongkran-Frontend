@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "@nuxt/ui";
 import { z } from "zod";
-import type { UserResponse } from "#server/types";
+import type { UserResponse } from "#shared/types";
 
 const toast = useToast();
 const { user, fetchSession } = useUserSession();
@@ -48,7 +48,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       const formData = new FormData();
       formData.append("file", avatarFile.value);
 
-      const uploadRes = await useApi("/api/upload", {
+      const uploadRes = await $fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
@@ -58,7 +58,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       }
     }
 
-    const res = await useApi<ApiResponse<UserResponse>>("/api/users/" + user.value?.id, {
+    const res = await $fetch<ApiResponse<UserResponse>>("/api/users/" + user.value?.id, {
       method: "PATCH",
       body: {
         ...data,

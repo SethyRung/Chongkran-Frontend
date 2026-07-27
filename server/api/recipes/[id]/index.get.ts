@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { recipes } from "hub:db:schema";
 import { aggregateLikesForRecipes, formatRecipeResponse } from "~~/server/utils/recipe";
-import type { RecipeResponse } from "~~/server/types";
+import type { RecipeResponse } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<RecipeResponse>> => {
   const id = getRouterParam(event, "id");

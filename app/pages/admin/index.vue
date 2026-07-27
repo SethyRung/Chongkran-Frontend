@@ -6,7 +6,7 @@ definePageMeta({ layout: "admin" });
 
 const toast = useToast();
 
-const { data: stats, pending, refresh } = await useFetchApi("/api/admin/stats");
+const { data: stats, pending, refresh } = await useFetch("/api/admin/stats");
 
 const lineOptions = (legend = false): ChartOptions => ({
   responsive: true,
@@ -135,7 +135,7 @@ const popularRecipesChartData = computed(() => {
 
 async function updateRecipeStatus(id: string, status: "approved" | "rejected") {
   try {
-    const res = await useApi(`/api/recipes/update-status?id=${id}&status=${status}`, {
+    const res = await $fetch(`/api/recipes/update-status?id=${id}&status=${status}`, {
       method: "PUT",
     });
 
@@ -167,7 +167,7 @@ async function updateRecipeStatus(id: string, status: "approved" | "rejected") {
 
 async function handleAuthorRequest(id: string, action: "approve" | "reject") {
   try {
-    const res = await useApi(`/api/users/authors/requests/${id}/${action}`, {
+    const res = await $fetch(`/api/users/authors/requests/${id}/${action}`, {
       method: "PATCH",
     });
 
@@ -210,7 +210,7 @@ async function handleAuthorRequest(id: string, action: "approve" | "reject") {
 
     <template #body>
       <div class="space-y-6">
-        <AdminStats :stats="stats?.data" :loading="pending" />
+        <AdminStats :stats="stats?.data ?? undefined" :loading="pending" />
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <AdminChartCard
@@ -246,17 +246,17 @@ async function handleAuthorRequest(id: string, action: "approve" | "reject") {
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <AdminPendingRecipes
-            :recipes="stats?.data.recentPendingRecipes"
+            :recipes="stats?.data?.recentPendingRecipes"
             @update-status="updateRecipeStatus"
           />
 
           <AdminPendingAuthorRequests
-            :requests="stats?.data.recentPendingAuthorRequests"
+            :requests="stats?.data?.recentPendingAuthorRequests"
             @handle-request="handleAuthorRequest"
           />
         </div>
 
-        <AdminRecentActivity :items="stats?.data.recentActivity" />
+        <AdminRecentActivity :items="stats?.data?.recentActivity" />
       </div>
     </template>
   </UDashboardPanel>

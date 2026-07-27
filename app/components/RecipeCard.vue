@@ -1,6 +1,6 @@
 <script lang="ts">
 interface RecipeCardProps {
-  recipe: Recipe;
+  recipe: RecipeResponse;
 }
 </script>
 <script setup lang="ts">

@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { user } from "hub:db:schema";
-import type { UpdateUserDto, UserResponse } from "~~/server/types";
+import type { UpdateUserDto, UserResponse } from "#shared/types";
 import { formatUserResponse } from "~~/server/utils/user";
 
 const updateUserSchema = z.object({

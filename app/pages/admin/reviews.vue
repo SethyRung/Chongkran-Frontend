@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { h } from "vue";
 import type { TableColumn } from "@nuxt/ui";
-import type { ReviewResponse } from "#server/types";
+import type { ReviewResponse } from "#shared/types";
 
 definePageMeta({ layout: "admin" });
 
@@ -70,7 +70,7 @@ const {
   data: reviewsData,
   pending,
   refresh,
-} = await useFetchApi("/api/reviews", {
+} = await useFetch("/api/reviews", {
   query: {
     offset,
     limit,
@@ -80,7 +80,9 @@ const {
   },
 });
 
-const total = computed(() => reviewsData.value?.meta?.total ?? 0);
+const total = computed(() =>
+  isSuccessResponse(reviewsData.value) ? (reviewsData.value.meta?.total ?? 0) : 0,
+);
 const reviews = computed(() => reviewsData.value?.data ?? []);
 
 function formatDate(dateStr?: string) {
@@ -151,7 +153,7 @@ async function executeAction() {
   if (!confirmAction.value) return;
 
   try {
-    const res = await useApi<ApiResponse<string>>(`/api/reviews/${confirmAction.value.id}`, {
+    const res = await $fetch<ApiResponse<string>>(`/api/reviews/${confirmAction.value.id}`, {
       method: "DELETE",
     });
 

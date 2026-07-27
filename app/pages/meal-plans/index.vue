@@ -6,7 +6,7 @@ const limit = ref(9);
 
 const offset = computed(() => (page.value - 1) * limit.value);
 
-const { data, pending, refresh } = await useFetchApi("/api/meal-plans", {
+const { data, pending, refresh } = await useFetch("/api/meal-plans", {
   query: { offset, limit },
 });
 
@@ -29,7 +29,7 @@ async function executeDelete() {
   if (!confirmTarget.value) return;
 
   try {
-    const res = await useApi<ApiResponse<string>>(`/api/meal-plans/${confirmTarget.value.id}`, {
+    const res = await $fetch<ApiResponse<string>>(`/api/meal-plans/${confirmTarget.value.id}`, {
       method: "DELETE",
     });
 

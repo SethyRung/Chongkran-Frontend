@@ -1,6 +1,6 @@
 import { count, eq, inArray } from "drizzle-orm";
 import { follows, user } from "hub:db:schema";
-import type { UserResponse } from "~~/server/types";
+import type { UserResponse } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<UserResponse[]>> => {
   const userId = getRouterParam(event, "userId");

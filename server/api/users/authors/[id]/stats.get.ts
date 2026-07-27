@@ -1,6 +1,6 @@
 import { and, count, eq } from "drizzle-orm";
 import { recipes, user } from "hub:db:schema";
-import type { AuthorStats } from "~~/server/types";
+import type { AuthorStats } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<AuthorStats>> => {
   await requireSession(event);

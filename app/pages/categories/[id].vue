@@ -24,7 +24,7 @@ const sortOptions = [
 
 const selectedSort = ref((route.query.sort as string) || "newest");
 
-const category = ref<Category | null>({
+const category = ref<CategoryResponse | null>({
   id: categoryId,
   name: "Pasta",
   description:
@@ -86,7 +86,7 @@ const categoriesWithNames: Record<string, { name: string; description: string; i
 
 const categoryInfo = computed(() => categoriesWithNames[categoryId] || categoriesWithNames.c1);
 
-const allRecipes = ref<Recipe[]>([
+const allRecipes = ref<RecipeResponse[]>([
   {
     id: "1",
     title: "Classic Spaghetti Carbonara",

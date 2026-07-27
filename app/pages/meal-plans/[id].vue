@@ -6,16 +6,16 @@ const toast = useToast();
 const mealPlanId = computed(() => route.params.id as string);
 
 const { pending, data, refresh } = await useAsyncData(`meal-plan-${mealPlanId.value}`, async () => {
-  const mealPlanRes = await useApi(`/api/meal-plans/${mealPlanId.value}`);
+  const mealPlanRes = await $fetch(`/api/meal-plans/${mealPlanId.value}`);
   if (!isSuccessResponse(mealPlanRes)) return;
 
   const uniqueIds = [...new Set(mealPlanRes.data.recipes.map((r) => r.recipeId))];
 
   const recipeResults = await Promise.allSettled(
-    uniqueIds.map((id) => useApi<ApiResponse<Recipe>>(`/api/recipes/${id}`)),
+    uniqueIds.map((id) => $fetch<ApiResponse<RecipeResponse>>(`/api/recipes/${id}`)),
   );
 
-  const recipeMap = new Map<string, Recipe>();
+  const recipeMap = new Map<string, RecipeResponse>();
   for (const result of recipeResults) {
     if (result.status === "fulfilled" && isSuccessResponse(result.value)) {
       recipeMap.set(result.value.data.id, result.value.data);
@@ -66,7 +66,7 @@ async function deletePlan() {
   if (!data.value) return;
 
   try {
-    const res = await useApi<ApiResponse<string>>(`/api/meal-plans/${data.value.id}`, {
+    const res = await $fetch<ApiResponse<string>>(`/api/meal-plans/${data.value.id}`, {
       method: "DELETE",
     });
 

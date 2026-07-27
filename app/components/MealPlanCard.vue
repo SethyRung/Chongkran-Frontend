@@ -1,6 +1,6 @@
 <script lang="ts">
 interface MealPlanCardProps {
-  mealPlan: MealPlan;
+  mealPlan: MealPlanResponse;
 }
 </script>
 <script setup lang="ts">
@@ -13,7 +13,7 @@ const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 const mealTypes = ["breakfast", "lunch", "dinner", "snack"];
 
 const groupedRecipes = computed(() => {
-  const groups: Record<string, MealPlanRecipeEntry[]> = {};
+  const groups: Record<string, RecipeEntry[]> = {};
   for (const day of days) {
     const entries = props.mealPlan.recipes.filter((r) => r.day === day);
     if (entries.length > 0) {

@@ -1,8 +1,8 @@
 <script lang="ts">
-import type { AdminStatsSummary } from "~~/shared/types";
+import type { AdminStatsResponse } from "~~/shared/types";
 
 interface AdminStatsProps {
-  stats?: AdminStatsSummary;
+  stats?: AdminStatsResponse;
   loading?: boolean;
 }
 </script>

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { mealPlans } from "hub:db:schema";
-import type { MealPlanResponse } from "~~/server/types";
+import type { MealPlanResponse } from "#shared/types";
 
 const recipeEntrySchema = z.object({
   recipeId: z.string().min(1),

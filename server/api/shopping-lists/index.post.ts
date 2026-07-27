@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { shoppingLists } from "hub:db:schema";
-import type { ShoppingListResponse } from "~~/server/types";
+import type { ShoppingListResponse } from "#shared/types";
 
 const shoppingItemSchema = z.object({
   name: z.string().min(1),

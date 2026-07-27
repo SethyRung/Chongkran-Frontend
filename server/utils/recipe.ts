@@ -1,6 +1,6 @@
 import { inArray } from "drizzle-orm";
 import { recipeLikes, recipes } from "hub:db:schema";
-import type { RecipeResponse } from "~~/server/types";
+import type { RecipeResponse } from "#shared/types";
 
 export type RecipeRow = typeof recipes.$inferSelect;
 export type RecipeLikesAgg = { count: number; userIds: string[] };

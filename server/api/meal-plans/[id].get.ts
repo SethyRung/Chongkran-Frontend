@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { mealPlans } from "hub:db:schema";
-import type { MealPlanResponse } from "~~/server/types";
+import type { MealPlanResponse } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<MealPlanResponse>> => {
   const { user: sessionUser } = await requireSession(event);

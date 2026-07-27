@@ -1,5 +1,5 @@
 import { user } from "hub:db:schema";
-import type { UserResponse } from "~~/server/types";
+import type { UserResponse } from "#shared/types";
 
 export type UserRow = typeof user.$inferSelect;
 

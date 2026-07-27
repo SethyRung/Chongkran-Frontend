@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { recipes } from "hub:db:schema";
 import { aggregateLikesForRecipes, formatRecipeResponse } from "~~/server/utils/recipe";
-import type { RecipeResponse } from "~~/server/types";
+import type { RecipeResponse } from "#shared/types";
 
 const updateRecipeSchema = z.object({
   title: z.string().min(1).optional(),

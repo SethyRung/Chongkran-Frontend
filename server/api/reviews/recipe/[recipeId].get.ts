@@ -1,7 +1,7 @@
 import { count, desc, eq } from "drizzle-orm";
 import { recipes, reviews } from "hub:db:schema";
 import { formatReviewResponse } from "~~/server/utils/review";
-import type { ReviewResponse } from "~~/server/types";
+import type { ReviewResponse } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<ReviewResponse[]>> => {
   await requireSession(event);

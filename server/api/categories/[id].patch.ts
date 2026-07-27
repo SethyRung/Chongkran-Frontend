@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@nuxthub/db";
 import { categories } from "hub:db:schema";
-import { CategoryResponse } from "~~/server/types";
+import type { CategoryResponse } from "#shared/types";
 
 const updateCategorySchema = z.object({
   name: z.string().min(1).max(100).optional(),

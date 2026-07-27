@@ -1,26 +1,26 @@
 <script lang="ts" setup>
-import type { RecipeResponse } from "#server/types";
+import type { RecipeResponse } from "#shared/types";
 
 const route = useRoute();
 const recipeId = computed(() => route.params.id as string);
 const { user, fetchSession } = useUserSession();
 const toast = useToast();
 
-const { data: recipeRes, refresh } = await useFetchApi<ApiResponse<RecipeResponse>>(
+const { data: recipeRes, refresh } = await useFetch<ApiResponse<RecipeResponse>>(
   `/api/recipes/${recipeId.value}`,
   {
     lazy: true,
   },
 );
 
-const recipe = computed<Recipe | null>(() => {
+const recipe = computed<RecipeResponse | null>(() => {
   if (recipeRes.value?.status.code === ApiResponseCode.Success) {
     return recipeRes.value.data;
   }
   return null;
 });
 
-const { data: favoriteCheck, refresh: refreshFavorite } = await useFetchApi<
+const { data: favoriteCheck, refresh: refreshFavorite } = await useFetch<
   ApiResponse<{ isFavorite: boolean }>
 >(`/api/favorites/${recipeId.value}/check`, {
   lazy: true,
@@ -95,7 +95,7 @@ async function toggleLike() {
 
     const willUnlike = isLiked.value;
 
-    const res = await useApi<ApiResponse<string>>(`/api/recipes/${recipe.value.id}/like`, {
+    const res = await $fetch<ApiResponse<string>>(`/api/recipes/${recipe.value.id}/like`, {
       method: "PUT",
     });
 
@@ -132,11 +132,11 @@ async function toggleSave() {
     saveLoading.value = true;
 
     if (isSaved.value) {
-      await useApi<ApiResponse<string>>(`/api/favorites/${recipe.value.id}`, {
+      await $fetch<ApiResponse<string>>(`/api/favorites/${recipe.value.id}`, {
         method: "DELETE",
       });
     } else {
-      await useApi<ApiResponse<string>>(`/api/favorites/${recipe.value.id}`, {
+      await $fetch<ApiResponse<string>>(`/api/favorites/${recipe.value.id}`, {
         method: "POST",
       });
     }

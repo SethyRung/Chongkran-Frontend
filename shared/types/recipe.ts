@@ -1,4 +1,6 @@
 import type { ReviewResponse } from "./review";
+import type { Author } from "./author";
+import type { CategoryResponse } from "./category";
 
 export type IngredientDto = {
   name: string;
@@ -11,7 +13,7 @@ export type RecipeResponse = {
   description?: string;
   ingredients: IngredientDto[];
   steps: string[];
-  author: string;
+  author: string | Author;
   authorName?: string;
   authorAvatar?: string;
   authorBio?: string;
@@ -23,7 +25,7 @@ export type RecipeResponse = {
   views?: number;
   difficulty: "easy" | "medium" | "hard";
   status?: "pending" | "approved" | "rejected";
-  category: string;
+  category: string | CategoryResponse;
   reviews?: ReviewResponse[];
   createdAt: string;
   updatedAt: string;

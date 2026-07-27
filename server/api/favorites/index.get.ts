@@ -1,7 +1,7 @@
 import { count, desc, eq, inArray } from "drizzle-orm";
 import { favorites, recipes } from "hub:db:schema";
 import { aggregateLikesForRecipes, formatRecipeResponse } from "~~/server/utils/recipe";
-import type { RecipeResponse } from "~~/server/types";
+import type { RecipeResponse } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<RecipeResponse[]>> => {
   const { user: sessionUser } = await requireSession(event);

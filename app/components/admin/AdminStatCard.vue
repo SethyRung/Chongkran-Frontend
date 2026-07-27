@@ -1,5 +1,7 @@
 <script lang="ts">
-const theme = {
+import { tv } from "tailwind-variants";
+
+const theme = tv({
   slots: {
     root: "rounded-lg overflow-hidden bg-default ring ring-default divide-y divide-default w-full",
     base: "p-4 sm:p-6 flex items-center gap-4",
@@ -19,7 +21,7 @@ const theme = {
   defaultVariants: {
     color: "primary",
   },
-};
+});
 
 type ColorVariant = "primary" | "warning" | "success" | "error" | "neutral";
 
@@ -35,11 +37,9 @@ interface AdminStatCardProps {
 </script>
 
 <script setup lang="ts">
-import { tv } from "tailwind-variants";
-
 const props = defineProps<AdminStatCardProps>();
 
-const ui = tv({ extend: theme })({ color: props.color });
+const ui = theme({ color: props.color });
 </script>
 
 <template>

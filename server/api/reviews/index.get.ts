@@ -1,6 +1,6 @@
 import { and, count, desc, eq, gte, ilike, lte, or, type SQL } from "drizzle-orm";
 import { recipes, reviews } from "hub:db:schema";
-import type { ReviewResponse } from "~~/server/types";
+import type { ReviewResponse } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<ReviewResponse[]>> => {
   await requireAdmin(event);

@@ -1,5 +1,5 @@
 import { reviews } from "hub:db:schema";
-import type { ReviewResponse } from "~~/server/types";
+import type { ReviewResponse } from "#shared/types";
 
 export type ReviewRow = typeof reviews.$inferSelect;
 

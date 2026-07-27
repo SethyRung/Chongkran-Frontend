@@ -20,15 +20,15 @@ const state = reactive<Partial<Schema>>({
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   const { data } = event;
 
-  const result = await signInEmail.execute({
+  await signInEmail.execute({
     email: data.email,
     password: data.password,
   });
 
-  if (result.error) {
+  if (signInEmail.error.value) {
     toast.add({
       title: "Login failed",
-      description: result.error.message ?? "Please check your credentials.",
+      description: signInEmail.error.value.message ?? "Please check your credentials.",
       color: "error",
       icon: "i-lucide-alert-circle",
     });
@@ -77,7 +77,13 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       <ULink to="/auth" variant="soft" color="neutral"> Forgot password? </ULink>
     </div>
 
-    <UButton label="Sign in" type="submit" :loading="signInEmail.isLoading" block size="xl" />
+    <UButton
+      label="Sign in"
+      type="submit"
+      :loading="signInEmail.status.value === 'pending'"
+      block
+      size="xl"
+    />
 
     <USeparator label="OR" />
 
