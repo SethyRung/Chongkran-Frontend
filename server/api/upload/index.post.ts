@@ -1,35 +1,41 @@
-import type { UploadResponse } from "#server/types";
+import { put } from "@vercel/blob";
+import type { UploadResponse } from "~~/server/types";
 
-export default defineEventHandler(async (event) => {
-  const body = await readRawBody(event, false);
+export default defineEventHandler(async (event): Promise<ApiResponse<UploadResponse>> => {
+  const { user: sessionUser } = await requireUserSession(event);
 
-  if (!body) {
-    return createResponse(
-      {
-        code: ApiResponseCode.ValidationError,
-        message: "File is required",
-      },
-      null,
-    );
+  const form = await readMultipartFormData(event);
+  const file = form?.find((p) => p.name === "file");
+  if (!file?.data || !file.filename) {
+    return createResponse({ code: ApiResponseCode.InvalidRequest, message: "file is required" });
   }
 
-  const contentType = getHeader(event, "content-type");
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!token) {
+    return createResponse({
+      code: ApiResponseCode.InternalError,
+      message: "BLOB_READ_WRITE_TOKEN is not configured",
+    });
+  }
 
   try {
-    return proxy<UploadResponse>(event, "/upload", {
-      method: "post",
-      body,
-      headers: {
-        "Content-Type": contentType || "application/octet-stream",
-      },
-    });
-  } catch {
-    return createResponse<UploadResponse>(
+    const blob = await put(
+      `recipes/${sessionUser.id}/${crypto.randomUUID()}-${file.filename}`,
+      file.data,
       {
-        code: ApiResponseCode.InternalError,
-        message: "An error occurred while processing the request.",
+        access: "public",
+        token,
       },
-      null as any,
     );
+
+    return createResponse(
+      { code: ApiResponseCode.Success },
+      { public_id: blob.pathname, url: blob.url },
+    );
+  } catch {
+    return createResponse({
+      code: ApiResponseCode.InternalError,
+      message: "Failed to upload file",
+    });
   }
 });

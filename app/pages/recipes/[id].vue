@@ -20,6 +20,12 @@ const recipe = computed<Recipe | null>(() => {
   return null;
 });
 
+const { data: favoriteCheck, refresh: refreshFavorite } = await useFetchApi<
+  ApiResponse<{ isFavorite: boolean }>
+>(`/api/favorites/${recipeId.value}/check`, {
+  lazy: true,
+});
+
 async function refreshUser() {
   try {
     await fetchSession({ force: true });
@@ -69,9 +75,7 @@ const isLiked = computed(() => {
   if (!user.value || !recipe.value) return false;
   return recipe.value.likedUserIds?.includes(user.value.id) ?? false;
 });
-// TODO: replace with GET /api/favorites/:recipeId/check once Phase 3 lands.
-// `favoriteRecipes` was denormalized on User; now lives in the `favorites` join table.
-const isSaved = ref(false);
+const isSaved = computed(() => favoriteCheck.value?.data?.isFavorite ?? false);
 
 const likeLoading = ref(false);
 const saveLoading = ref(false);
@@ -137,7 +141,7 @@ async function toggleSave() {
       });
     }
 
-    await refreshUser();
+    await refreshFavorite();
     toast.add({
       title: isSaved.value ? "Recipe saved" : "Recipe removed from favorites",
       color: "success",
