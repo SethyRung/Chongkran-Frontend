@@ -1,17 +1,23 @@
-export default defineEventHandler(async (event) => {
-  const recipeId = getRouterParam(event, "recipeId");
+import { and, eq } from "drizzle-orm";
+import { favorites } from "hub:db:schema";
 
+export default defineEventHandler(async (event): Promise<ApiResponse<{ message: string }>> => {
+  const recipeId = getRouterParam(event, "recipeId");
   if (!recipeId) {
-    return createResponse(
-      {
-        code: ApiResponseCode.ValidationError,
-        message: "Recipe ID is required",
-      },
-      null,
-    );
+    return createResponse({
+      code: ApiResponseCode.InvalidRequest,
+      message: "Recipe id is required",
+    });
   }
 
-  return proxy<string>(event, `/favorites/${recipeId}`, {
-    method: "delete",
-  });
+  const { user: sessionUser } = await requireUserSession(event);
+
+  await db
+    .delete(favorites)
+    .where(and(eq(favorites.userId, sessionUser.id), eq(favorites.recipeId, recipeId)));
+
+  return createResponse(
+    { code: ApiResponseCode.Success },
+    { message: "Recipe removed from favorites" },
+  );
 });
