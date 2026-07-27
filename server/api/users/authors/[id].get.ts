@@ -1,17 +1,28 @@
-import type { UserResponse } from "#server/types";
+import { and, eq } from "drizzle-orm";
+import { user } from "hub:db:schema";
+import { formatUserResponse } from "~~/server/utils/user";
+import type { UserResponse } from "~~/server/types";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<ApiResponse<UserResponse>> => {
+  await requireUserSession(event);
+
   const id = getRouterParam(event, "id");
-
   if (!id) {
-    return createResponse(
-      {
-        code: ApiResponseCode.ValidationError,
-        message: "Author ID is required",
-      },
-      null,
-    );
+    return createResponse({
+      code: ApiResponseCode.InvalidRequest,
+      message: "Author id is required",
+    });
   }
 
-  return proxy<UserResponse>(event, `/users/authors/${id}`);
+  const [row] = await db
+    .select()
+    .from(user)
+    .where(and(eq(user.id, id), eq(user.role, "author")))
+    .limit(1);
+
+  if (!row) {
+    return createResponse({ code: ApiResponseCode.NotFound, message: "Author not found" });
+  }
+
+  return createResponse({ code: ApiResponseCode.Success }, formatUserResponse(row));
 });
