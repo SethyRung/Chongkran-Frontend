@@ -4,27 +4,17 @@ import { describe, expect, it } from "vitest";
 await setup({ rootDir: process.cwd(), dev: true, setupTimeout: 300_000 });
 
 describe("GET /api/favorites (current user's favorites)", () => {
-  it("rejects unauthenticated callers with 401/403", async () => {
-    let status: number | undefined;
-    try {
-      await $fetch("/api/favorites");
-    } catch (err) {
-      const e = err as { statusCode?: number };
-      status = e.statusCode;
-    }
-    expect([401, 403]).toContain(status);
+  it("rejects unauthenticated callers with the Unauthorized envelope (HTTP 200)", async () => {
+    const res = await $fetch("/api/favorites");
+    expect(res.status.code).toBe("UNAUTHORIZED");
+    expect(res.data).toBeNull();
   });
 });
 
 describe("GET /api/favorites/:recipeId/check", () => {
-  it("rejects unauthenticated callers with 401/403", async () => {
-    let status: number | undefined;
-    try {
-      await $fetch("/api/favorites/some-recipe-id/check");
-    } catch (err) {
-      const e = err as { statusCode?: number };
-      status = e.statusCode;
-    }
-    expect([401, 403]).toContain(status);
+  it("rejects unauthenticated callers with the Unauthorized envelope (HTTP 200)", async () => {
+    const res = await $fetch("/api/favorites/some-recipe-id/check");
+    expect(res.status.code).toBe("UNAUTHORIZED");
+    expect(res.data).toBeNull();
   });
 });

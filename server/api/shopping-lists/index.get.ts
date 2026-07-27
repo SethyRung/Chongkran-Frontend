@@ -3,7 +3,7 @@ import { shoppingLists } from "hub:db:schema";
 import type { ShoppingListResponse } from "~~/server/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<ShoppingListResponse>> => {
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   const [row] = await db
     .select()

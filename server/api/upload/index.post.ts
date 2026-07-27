@@ -2,7 +2,7 @@ import { put } from "@vercel/blob";
 import type { UploadResponse } from "~~/server/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<UploadResponse>> => {
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   const form = await readMultipartFormData(event);
   const file = form?.find((p) => p.name === "file");

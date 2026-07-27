@@ -10,7 +10,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<{ message: 
     });
   }
 
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   const [recipe] = await db
     .select({ id: recipes.id })

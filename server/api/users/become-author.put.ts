@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { user } from "hub:db:schema";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<{ message: string }>> => {
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   const [existing] = await db
     .select({ authorRequestStatus: user.authorRequestStatus })

@@ -3,7 +3,7 @@ import { mealPlans } from "hub:db:schema";
 import type { MealPlanResponse } from "~~/server/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<MealPlanResponse>> => {
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   const id = getRouterParam(event, "id");
   if (!id) {

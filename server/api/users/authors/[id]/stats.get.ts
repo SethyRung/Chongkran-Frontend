@@ -3,7 +3,7 @@ import { recipes, user } from "hub:db:schema";
 import type { AuthorStats } from "~~/server/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<AuthorStats>> => {
-  await requireUserSession(event);
+  await requireSession(event);
 
   const id = getRouterParam(event, "id");
   if (!id) {

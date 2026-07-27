@@ -4,7 +4,7 @@ import { formatUserResponse } from "~~/server/utils/user";
 import type { UserResponse } from "~~/server/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<UserResponse>> => {
-  await requireUserSession(event);
+  await requireSession(event);
 
   const id = getRouterParam(event, "id");
   if (!id) {

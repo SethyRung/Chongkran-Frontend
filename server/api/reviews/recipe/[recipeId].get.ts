@@ -4,7 +4,7 @@ import { formatReviewResponse } from "~~/server/utils/review";
 import type { ReviewResponse } from "~~/server/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<ReviewResponse[]>> => {
-  await requireUserSession(event);
+  await requireSession(event);
 
   const recipeId = getRouterParam(event, "recipeId");
   if (!recipeId) {

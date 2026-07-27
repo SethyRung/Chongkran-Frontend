@@ -14,7 +14,7 @@ const createShoppingListSchema = z.object({
 });
 
 export default defineEventHandler(async (event): Promise<ApiResponse<ShoppingListResponse>> => {
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   const [existing] = await db
     .select({ id: shoppingLists.id })

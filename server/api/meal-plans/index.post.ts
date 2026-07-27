@@ -14,7 +14,7 @@ const createMealPlanSchema = z.object({
 });
 
 export default defineEventHandler(async (event): Promise<ApiResponse<MealPlanResponse>> => {
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   const body = await readValidatedBody(event, createMealPlanSchema.parse);
 

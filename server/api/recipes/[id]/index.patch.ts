@@ -33,7 +33,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<RecipeRespo
     });
   }
 
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   const [existing] = await db.select().from(recipes).where(eq(recipes.id, id)).limit(1);
   if (!existing) {

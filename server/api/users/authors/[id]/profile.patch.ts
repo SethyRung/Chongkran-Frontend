@@ -49,7 +49,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<UserRespons
     });
   }
 
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   if (sessionUser.role !== "admin" && sessionUser.id !== id) {
     return createResponse({

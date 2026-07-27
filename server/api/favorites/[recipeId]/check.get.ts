@@ -10,7 +10,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<{ isFavorit
     });
   }
 
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   const [row] = await db
     .select({ userId: favorites.userId })

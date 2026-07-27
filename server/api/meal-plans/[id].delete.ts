@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { mealPlans } from "hub:db:schema";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<null>> => {
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   const id = getRouterParam(event, "id");
   if (!id) {

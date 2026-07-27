@@ -4,7 +4,7 @@ import { aggregateLikesForRecipes, formatRecipeResponse } from "~~/server/utils/
 import type { RecipeResponse } from "~~/server/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<RecipeResponse[]>> => {
-  const { user } = await requireUserSession(event);
+  const { user } = await requireSession(event);
 
   const query = getQuery(event);
   const statusParam = typeof query.status === "string" ? query.status : "all";

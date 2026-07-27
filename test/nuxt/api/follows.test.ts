@@ -3,32 +3,18 @@ import { describe, expect, it } from "vitest";
 
 await setup({ rootDir: process.cwd(), dev: true, setupTimeout: 300_000 });
 
-describe("GET /api/follows/stats/:userId", () => {
-  it("returns the standard envelope for a valid userId", async () => {
-    let status: number | undefined;
-    let body: unknown;
-    try {
-      body = await $fetch("/api/follows/stats/test-user-id");
-    } catch (err) {
-      const e = err as { statusCode?: number };
-      status = e.statusCode;
-    }
-    // The user doesn't exist, so we expect 404. We mainly verify the
-    // endpoint exists and returns the standard envelope shape on success.
-    expect([200, 404]).toContain(status ?? 200);
-    expect(body).toBeDefined();
+describe("GET /api/follows/stats/:userId (public)", () => {
+  it("returns the NotFound envelope (HTTP 200) for a non-existent user", async () => {
+    const res = await $fetch("/api/follows/stats/test-user-id");
+    expect(res.status.code).toBe("NOT_FOUND");
+    expect(res.data).toBeNull();
   });
 });
 
 describe("GET /api/follows/is-following/:followingId", () => {
-  it("rejects unauthenticated callers with 401/403", async () => {
-    let status: number | undefined;
-    try {
-      await $fetch("/api/follows/is-following/some-user-id");
-    } catch (err) {
-      const e = err as { statusCode?: number };
-      status = e.statusCode;
-    }
-    expect([401, 403]).toContain(status);
+  it("rejects unauthenticated callers with the Unauthorized envelope (HTTP 200)", async () => {
+    const res = await $fetch("/api/follows/is-following/some-user-id");
+    expect(res.status.code).toBe("UNAUTHORIZED");
+    expect(res.data).toBeNull();
   });
 });

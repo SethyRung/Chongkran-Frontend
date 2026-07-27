@@ -12,17 +12,12 @@ describe("GET /api/categories", () => {
 });
 
 describe("POST /api/categories", () => {
-  it("rejects unauthenticated callers with 401/403", async () => {
-    let status: number | undefined;
-    try {
-      await $fetch("/api/categories", {
-        method: "POST",
-        body: { name: "Should Fail" },
-      });
-    } catch (err) {
-      const e = err as { statusCode?: number };
-      status = e.statusCode;
-    }
-    expect([401, 403]).toContain(status);
+  it("rejects unauthenticated callers with the Unauthorized envelope (HTTP 200)", async () => {
+    const res = await $fetch("/api/categories", {
+      method: "POST",
+      body: { name: "Should Fail" },
+    });
+    expect(res.status.code).toBe("UNAUTHORIZED");
+    expect(res.data).toBeNull();
   });
 });

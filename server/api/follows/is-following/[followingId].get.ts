@@ -7,7 +7,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<{ isFollowi
     return createResponse({ code: ApiResponseCode.InvalidRequest, message: "User id is required" });
   }
 
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   const [row] = await db
     .select({ followerId: follows.followerId })

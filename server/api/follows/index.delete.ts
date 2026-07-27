@@ -7,7 +7,7 @@ const unfollowSchema = z.object({
 });
 
 export default defineEventHandler(async (event): Promise<ApiResponse<{ message: string }>> => {
-  const { user: sessionUser } = await requireUserSession(event);
+  const { user: sessionUser } = await requireSession(event);
 
   const body = await readValidatedBody(event, unfollowSchema.parse);
 
