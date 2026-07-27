@@ -4,6 +4,7 @@ const router = useRouter();
 const { user } = useUserSession();
 
 const searchQuery = ref((route.query.search as string) || "");
+const debouncedSearch = refDebounced(searchQuery, 300);
 const selectedCategory = ref((route.query.category as string) || "");
 const selectedDifficulty = ref((route.query.difficulty as string) || "");
 const currentPage = ref(Number(route.query.page) || 1);
@@ -18,7 +19,11 @@ const {
   pending: recipesPending,
   refresh: refreshRecipes,
 } = await useFetchApi<ApiResponse<Recipe[]>>("/api/recipes", {
-  query: { offset: 0, limit: 100 },
+  query: computed(() => ({
+    offset: 0,
+    limit: 100,
+    ...(debouncedSearch.value ? { search: debouncedSearch.value } : {}),
+  })),
 });
 
 const allRecipes = computed(() => {
@@ -34,15 +39,6 @@ const difficultyOptions = [
 
 const filteredRecipes = computed(() => {
   let recipes = [...allRecipes.value];
-
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    recipes = recipes.filter(
-      (r) =>
-        r.title.toLowerCase().includes(query) ||
-        (r.description ?? "").toLowerCase().includes(query),
-    );
-  }
 
   if (selectedCategory.value) {
     recipes = recipes.filter((r) => {

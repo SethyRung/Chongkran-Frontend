@@ -15,6 +15,13 @@
       "when": 1785119763371,
       "tag": "0001_unusual_aqueduct",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785137065126,
+      "tag": "0002_tan_butterfly",
+      "breakpoints": true
     }
   ]
 }

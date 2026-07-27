@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   index,
@@ -58,6 +58,8 @@ export const recipes = pgTable(
     index("recipes_author_idx").on(t.author),
     index("recipes_category_idx").on(t.category),
     index("recipes_status_idx").on(t.status),
+    index("recipes_title_trgm_idx").using("gin", sql`title gin_trgm_ops`),
+    index("recipes_description_trgm_idx").using("gin", sql`description gin_trgm_ops`),
   ],
 );
 
@@ -76,6 +78,23 @@ export const recipeLikes = pgTable(
     primaryKey({ columns: [t.recipeId, t.userId] }),
     index("recipe_likes_recipe_idx").on(t.recipeId),
     index("recipe_likes_user_idx").on(t.userId),
+  ],
+);
+
+export const recipeViews = pgTable(
+  "recipe_views",
+  {
+    recipeId: text("recipe_id")
+      .notNull()
+      .references(() => recipes.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.recipeId, t.userId] }),
+    index("recipe_views_recipe_idx").on(t.recipeId),
   ],
 );
 
