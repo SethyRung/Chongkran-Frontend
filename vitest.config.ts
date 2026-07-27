@@ -21,8 +21,14 @@ export default defineConfig({
       await defineVitestProject({
         test: {
           name: "nuxt",
-          include: ["test/nuxt/*.{test,spec}.ts"],
+          include: ["test/nuxt/**/*.{test,spec}.ts"],
           environment: "nuxt",
+        },
+        resolve: {
+          alias: {
+            "bun:test": new URL("./test/stubs/bun-test.ts", import.meta.url).pathname,
+            "bun:test/mock": new URL("./test/stubs/bun-test.ts", import.meta.url).pathname,
+          },
         },
       }),
     ],
