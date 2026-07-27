@@ -1,17 +1,27 @@
-import type { RecipeResponse } from "#server/types";
+import { eq } from "drizzle-orm";
+import { recipes } from "hub:db:schema";
+import { aggregateLikesForRecipes, formatRecipeResponse } from "~~/server/utils/recipe";
+import type { RecipeResponse } from "~~/server/types";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<ApiResponse<RecipeResponse>> => {
   const id = getRouterParam(event, "id");
-
   if (!id) {
-    return createResponse(
-      {
-        code: ApiResponseCode.ValidationError,
-        message: "Recipe ID is required",
-      },
-      null,
-    );
+    return createResponse({
+      code: ApiResponseCode.InvalidRequest,
+      message: "Recipe id is required",
+    });
   }
 
-  return proxy<RecipeResponse>(event, `/recipes/${id}/with-author`);
+  const [row] = await db.select().from(recipes).where(eq(recipes.id, id)).limit(1);
+
+  if (!row) {
+    return createResponse({ code: ApiResponseCode.NotFound, message: "Recipe not found" });
+  }
+
+  const likesMap = await aggregateLikesForRecipes([row.id]);
+
+  return createResponse(
+    { code: ApiResponseCode.Success },
+    formatRecipeResponse(row, likesMap.get(row.id)),
+  );
 });
