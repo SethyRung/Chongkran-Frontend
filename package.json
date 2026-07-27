@@ -8,6 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "predeploy": "bun hub:db:migrate && bun build",
     "typecheck": "nuxt typecheck",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
@@ -42,6 +43,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.4",
     "@iconify-json/lucide": "^1.2.104",
     "@nuxt/test-utils": "^4.0.3",
     "@vue/test-utils": "^2.4.11",
