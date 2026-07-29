@@ -45,6 +45,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.4",
     "@iconify-json/lucide": "^1.2.120",
+    "@iconify-json/simple-icons": "^1.2.92",
     "@nuxt/test-utils": "^4.0.3",
     "@vue/test-utils": "^2.4.11",
     "drizzle-kit": "^0.31.10",

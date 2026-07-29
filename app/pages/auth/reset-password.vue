@@ -71,5 +71,100 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 </script>
 
 <template>
-  <div></div>
+  <div>
+    <template v-if="!hasToken">
+      <div class="text-center py-4">
+        <div
+          class="mx-auto size-16 rounded-full bg-error-50 dark:bg-error-950/40 flex items-center justify-center mb-6"
+        >
+          <UIcon name="i-lucide-alert-circle" class="size-8 text-error" />
+        </div>
+        <h2 class="text-2xl font-semibold tracking-tight text-highlighted">Link is missing</h2>
+        <p class="mt-3 text-base text-muted leading-relaxed">
+          This reset link is invalid or has expired. Request a fresh one and we'll send it straight
+          to your inbox.
+        </p>
+        <UButton label="Request a new link" size="lg" to="/auth/forgot-password" class="mt-8" />
+      </div>
+
+      <p class="mt-10 text-sm text-muted text-center">
+        <NuxtLink
+          to="/auth/login"
+          class="inline-flex items-center gap-1.5 text-default hover:text-primary transition-colors"
+        >
+          <UIcon name="i-lucide-arrow-left" class="size-4" />
+          Back to sign in
+        </NuxtLink>
+      </p>
+    </template>
+
+    <template v-else>
+      <header class="mb-8">
+        <h1 class="text-3xl font-semibold tracking-tight text-highlighted">Set a new password</h1>
+        <p class="mt-2 text-base text-muted">Pick something strong — at least 8 characters.</p>
+      </header>
+
+      <UAlert
+        v-if="errorMessage"
+        color="error"
+        variant="subtle"
+        :title="errorMessage"
+        icon="i-lucide-alert-circle"
+        class="mb-6"
+      />
+
+      <UForm :schema="schema" :state="state" class="space-y-5" @submit="onSubmit">
+        <UFormField name="password" label="New password">
+          <UInput
+            v-model="state.password"
+            :type="showPassword ? 'text' : 'password'"
+            placeholder="At least 8 characters"
+            size="lg"
+            autocomplete="new-password"
+            autofocus
+          >
+            <template #leading>
+              <UIcon name="i-lucide-lock" class="size-4 text-muted" />
+            </template>
+            <template #trailing>
+              <UButton
+                :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                @click="showPassword = !showPassword"
+              />
+            </template>
+          </UInput>
+        </UFormField>
+
+        <UFormField name="confirmPassword" label="Confirm new password">
+          <UInput
+            v-model="state.confirmPassword"
+            :type="showConfirmPassword ? 'text' : 'password'"
+            placeholder="Repeat the password"
+            size="lg"
+            autocomplete="new-password"
+          >
+            <template #leading>
+              <UIcon name="i-lucide-lock-keyhole" class="size-4 text-muted" />
+            </template>
+            <template #trailing>
+              <UButton
+                :icon="showConfirmPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'"
+                @click="showConfirmPassword = !showConfirmPassword"
+              />
+            </template>
+          </UInput>
+        </UFormField>
+
+        <UButton type="submit" label="Update password" size="lg" block :loading="loading" />
+      </UForm>
+    </template>
+  </div>
 </template>
