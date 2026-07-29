@@ -51,7 +51,7 @@ const userMenuItems = computed(() => [
 
 async function logout() {
   await signOut();
-  await navigateTo("/auth");
+  await navigateTo("/auth/login");
 }
 </script>
 
@@ -99,7 +99,7 @@ async function logout() {
           </UButton>
         </UDropdownMenu>
 
-        <UButton v-else to="/auth">Login</UButton>
+        <UButton v-else to="/auth/login">Login</UButton>
       </div>
     </template>
 

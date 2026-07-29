@@ -2,8 +2,21 @@
 @import "@nuxt/ui";
 
 @theme static {
+  --color-primary-50: #f7fce9;
+  --color-primary-100: #edf8cf;
+  --color-primary-200: #dbf1a5;
+  --color-primary-300: #c1e670;
+  --color-primary-400: #a7d645;
+  --color-primary-500: #90c628;
+  --color-primary-600: #69961a;
+  --color-primary-700: #507219;
+  --color-primary-800: #425b19;
+  --color-primary-900: #384d1a;
+  --color-primary-950: #1c2a09;
+
   --font-sans: "Geist", sans-serif;
   --font-mono: "Geist Mono", sans-serif;
+  --font-pixel: "Geist Pixel", monospace;
 }
 
 @utility no-scrollbar {

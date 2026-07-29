@@ -248,7 +248,13 @@ const stats = ref([
             </p>
           </div>
           <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
-            <UButton to="/auth" color="neutral" variant="solid" size="lg" icon="i-lucide-user-plus">
+            <UButton
+              to="/auth/register"
+              color="neutral"
+              variant="solid"
+              size="lg"
+              icon="i-lucide-user-plus"
+            >
               Become an Author
             </UButton>
             <UButton to="/recipes" variant="soft" size="lg" trailing-icon="i-lucide-arrow-right">

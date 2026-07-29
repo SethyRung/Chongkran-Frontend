@@ -48,10 +48,10 @@ export default defineNuxtConfig({
       casing: "snake_case",
     },
     redirects: {
-      login: "/auth",
+      login: "/auth/login",
       guest: "/",
       authenticated: "/",
-      logout: "/auth",
+      logout: "/auth/login",
     },
     preserveRedirect: true,
   },
@@ -61,7 +61,7 @@ export default defineNuxtConfig({
     "/profile/**": { auth: "user" },
     "/meal-plans/**": { auth: "user" },
     "/shopping-lists/**": { auth: "user" },
-    "/auth": { auth: "guest" },
+    "/auth/**": { auth: "guest" },
   },
 
   nitro: {
