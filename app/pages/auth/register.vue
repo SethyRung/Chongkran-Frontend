@@ -100,13 +100,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     <UForm :schema="schema" :state="state" class="space-y-5" @submit="onSubmit">
       <div class="grid grid-cols-2 gap-3">
         <UFormField name="firstName" label="First name">
-          <UInput
-            v-model="state.firstName"
-            placeholder="Mali"
-            size="lg"
-            autocomplete="given-name"
-            autofocus
-          >
+          <UInput v-model="state.firstName" placeholder="Mali" size="lg" autocomplete="given-name">
             <template #leading>
               <UIcon name="i-lucide-user" class="size-4 text-muted" />
             </template>

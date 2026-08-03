@@ -28,7 +28,7 @@ const isSubmitting = computed(() => signInEmail.status.value === "pending");
 
 const schema = z.object({
   email: z.email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z.string().min(8, "Password must be provided"),
 });
 
 type Schema = z.output<typeof schema>;
@@ -47,13 +47,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   });
 
   if (signInEmail.error.value) return;
-
-  toast.add({
-    title: "Welcome back!",
-    description: "You have been logged in successfully.",
-    color: "success",
-    icon: "i-lucide-check-circle",
-  });
 
   await navigateTo("/");
 }
@@ -84,7 +77,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
           placeholder="you@example.com"
           size="lg"
           autocomplete="email"
-          autofocus
         >
           <template #leading>
             <UIcon name="i-lucide-mail" class="size-4 text-muted" />

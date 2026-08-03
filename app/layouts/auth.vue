@@ -29,8 +29,8 @@
         />
       </aside>
 
-      <main class="px-12 py-14">
-        <div class="w-full max-w-md">
+      <main class="px-8 md:px-12 py-14">
+        <div class="w-full max-w-md mx-auto">
           <UTheme
             :props="{
               input: {

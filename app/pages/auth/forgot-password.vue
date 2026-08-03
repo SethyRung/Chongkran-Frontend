@@ -88,7 +88,6 @@ function tryAnother() {
             placeholder="you@example.com"
             size="lg"
             autocomplete="email"
-            autofocus
           >
             <template #leading>
               <UIcon name="i-lucide-mail" class="size-4 text-muted" />

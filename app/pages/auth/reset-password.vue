@@ -121,7 +121,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             placeholder="At least 8 characters"
             size="lg"
             autocomplete="new-password"
-            autofocus
           >
             <template #leading>
               <UIcon name="i-lucide-lock" class="size-4 text-muted" />
