@@ -2,6 +2,7 @@ export type CategoryResponse = {
   id: string;
   name: string;
   description?: string;
+  recipeCount?: number;
   createdAt: string;
   updatedAt: string;
 };

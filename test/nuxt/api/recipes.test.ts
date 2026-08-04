@@ -28,3 +28,25 @@ describe("GET /api/recipes/:id", () => {
     expect(res.data).toBeNull();
   });
 });
+
+describe("GET /api/recipes/popular", () => {
+  it("returns the standard envelope with an array data field", async () => {
+    const res = await $fetch("/api/recipes/popular");
+    expect(res.status.code).toBe("SUCCESS");
+    expect(Array.isArray(res.data)).toBe(true);
+  });
+
+  it("orders approved recipes by views desc", async () => {
+    const res = await $fetch("/api/recipes/popular");
+    if (!isSuccessResponse(res) || !res.data || res.data.length < 2) return;
+    const views = res.data.map((r: { views?: number }) => r.views ?? 0);
+    for (let i = 1; i < views.length; i++) {
+      expect(views[i - 1] ?? 0).toBeGreaterThanOrEqual(views[i] ?? 0);
+    }
+  });
+
+  it("respects the limit query param (clamped)", async () => {
+    const res = await $fetch("/api/recipes/popular", { query: { limit: 3 } });
+    expect(res.data?.length ?? 0).toBeLessThanOrEqual(3);
+  });
+});

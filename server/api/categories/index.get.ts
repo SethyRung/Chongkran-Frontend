@@ -1,6 +1,6 @@
 import { and, count, desc, eq, ilike } from "drizzle-orm";
 import { db } from "@nuxthub/db";
-import { categories } from "hub:db:schema";
+import { categories, recipes } from "hub:db:schema";
 import type { CategoryResponse } from "#shared/types";
 
 export default defineEventHandler(async (event): Promise<ApiResponse<CategoryResponse[]>> => {
@@ -13,7 +13,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<CategoryRes
   if (search) filters.push(ilike(categories.name, `%${search}%`));
   const where = and(...filters);
 
-  const [rows, totalRow] = await Promise.all([
+  const [rows, totalRow, countRows] = await Promise.all([
     db
       .select({
         id: categories.id,
@@ -28,12 +28,20 @@ export default defineEventHandler(async (event): Promise<ApiResponse<CategoryRes
       .limit(limit)
       .offset(offset),
     db.select({ value: count() }).from(categories).where(where),
+    db
+      .select({ category: recipes.category, value: count() })
+      .from(recipes)
+      .where(eq(recipes.status, "approved"))
+      .groupBy(recipes.category),
   ]);
+
+  const recipeCountByCategory = new Map(countRows.map((r) => [r.category, Number(r.value)]));
 
   const items: CategoryResponse[] = rows.map((row) => ({
     id: row.id,
     name: row.name,
     description: row.description ?? undefined,
+    recipeCount: recipeCountByCategory.get(row.id) ?? 0,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   }));

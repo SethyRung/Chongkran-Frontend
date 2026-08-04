@@ -9,6 +9,15 @@ describe("GET /api/categories", () => {
     expect(res.status.code).toBe("SUCCESS");
     expect(Array.isArray(res.data)).toBe(true);
   });
+
+  it("includes a non-negative recipeCount on every category", async () => {
+    const res = await $fetch("/api/categories");
+    expect(res.status.code).toBe("SUCCESS");
+    for (const category of res.data ?? []) {
+      expect(typeof category.recipeCount).toBe("number");
+      expect(category.recipeCount).toBeGreaterThanOrEqual(0);
+    }
+  });
 });
 
 describe("POST /api/categories", () => {

@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
 import { recipes, recipeLikes, reviews, user } from "hub:db:schema";
 import type { AdminStatsResponse } from "#shared/types";
 
@@ -130,7 +130,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<AdminStatsR
     const likeRows = await db
       .select({ recipeId: recipeLikes.recipeId })
       .from(recipeLikes)
-      .where(sql`${recipeLikes.recipeId} = ANY(${popularRecipeIds})`);
+      .where(inArray(recipeLikes.recipeId, popularRecipeIds));
     for (const row of likeRows) {
       likeCountsByRecipe.set(row.recipeId, (likeCountsByRecipe.get(row.recipeId) ?? 0) + 1);
     }
