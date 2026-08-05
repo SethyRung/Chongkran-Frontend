@@ -1,5 +1,58 @@
 <script lang="ts" setup>
-const categoryIcons = {
+import { isSuccessResponse } from "#shared/utils";
+import type { CategoryResponse, RecipeResponse } from "#shared/types";
+import type { StatsResponse } from "~~/server/api/stats.get";
+
+useHead({
+  title: "Chongkran — Find a recipe worth cooking",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Discover real recipes from a community of home cooks. Search by ingredient, browse by cuisine, save what you'll actually cook.",
+    },
+  ],
+});
+
+const search = ref("");
+
+const [{ data: statsRes }, { data: categoriesRes }, { data: popularRes }] = await Promise.all([
+  useFetch("/api/stats"),
+  useFetch("/api/categories", { query: { limit: 12 } }),
+  useFetch("/api/recipes/popular", { query: { limit: 8 } }),
+]);
+
+const stats = computed<StatsResponse | null>(() =>
+  isSuccessResponse(statsRes.value) ? statsRes.value.data : null,
+);
+
+const categories = computed<CategoryResponse[]>(() =>
+  isSuccessResponse(categoriesRes.value) ? categoriesRes.value.data : [],
+);
+
+const popularRecipes = computed<RecipeResponse[]>(() =>
+  isSuccessResponse(popularRes.value) ? popularRes.value.data : [],
+);
+
+const trendingTags = computed<string[]>(() => {
+  const counts = new Map<string, number>();
+  for (const recipe of popularRecipes.value) {
+    for (const tag of recipe.tags ?? []) {
+      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 8)
+    .map(([tag]) => tag);
+});
+
+const hasStats = computed(() => {
+  if (!stats.value) return false;
+  return stats.value.recipes > 0 || stats.value.categories > 0 || stats.value.authors > 0;
+});
+
+const categoryIcons: Record<string, string> = {
   Pasta: "i-lucide-utensils",
   Asian: "i-lucide-utensils",
   American: "i-lucide-beef",
@@ -8,261 +61,160 @@ const categoryIcons = {
   Salads: "i-lucide-leaf",
 };
 
-const featuredRecipes = ref<RecipeResponse[]>([
-  {
-    id: "1",
-    title: "Classic Spaghetti Carbonara",
-    description: "A traditional Italian pasta dish made with eggs, cheese, pancetta, and pepper.",
-    ingredients: [
-      { name: "Spaghetti", quantity: "400g" },
-      { name: "Eggs", quantity: "4" },
-      { name: "Pecorino Romano", quantity: "100g" },
-    ],
-    steps: ["Cook pasta", "Prepare sauce", "Combine"],
-    author: {
-      id: "a1",
-      firstName: "Marco",
-      lastName: "Rossi",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marco",
-    },
-    tags: ["Italian", "Pasta", "Quick"],
-    image: "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=600",
-    cookTime: 30,
-    likes: 3,
-    views: 1250,
-    difficulty: "medium",
-    status: "approved",
-    category: { id: "c1", name: "Pasta", createdAt: "", updatedAt: "" },
-    createdAt: "2024-01-15",
-    updatedAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    title: "Khmer Green Curry",
-    description: "Aromatic and creamy Khmer curry with vegetables and your choice of protein.",
-    ingredients: [
-      { name: "Coconut Milk", quantity: "400ml" },
-      { name: "Green Curry Paste", quantity: "3 tbsp" },
-    ],
-    steps: ["Prepare curry paste", "Cook protein", "Add vegetables"],
-    author: {
-      id: "a2",
-      firstName: "Suki",
-      lastName: "Tanaka",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Suki",
-    },
-    tags: ["Khmer", "Curry", "Spicy"],
-    image: "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=600",
-    cookTime: 45,
-    likes: 2,
-    views: 890,
-    difficulty: "medium",
-    status: "approved",
-    category: { id: "c2", name: "Asian", createdAt: "", updatedAt: "" },
-    createdAt: "2024-01-10",
-    updatedAt: "2024-01-10",
-  },
-  {
-    id: "3",
-    title: "Classic Beef Burger",
-    description: "Juicy homemade beef burger with all the classic toppings.",
-    ingredients: [
-      { name: "Ground Beef", quantity: "500g" },
-      { name: "Burger Buns", quantity: "4" },
-    ],
-    steps: ["Form patties", "Grill burgers", "Assemble"],
-    author: {
-      id: "a3",
-      firstName: "John",
-      lastName: "Smith",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
-    },
-    tags: ["American", "Grill", "Comfort Food"],
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600",
-    cookTime: 25,
-    likes: 4,
-    views: 2100,
-    difficulty: "easy",
-    status: "approved",
-    category: { id: "c3", name: "American", createdAt: "", updatedAt: "" },
-    createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
-  },
-  {
-    id: "4",
-    title: "Chicken Tikka Masala",
-    description: "Creamy tomato-based curry with tender pieces of marinated chicken.",
-    ingredients: [
-      { name: "Chicken Breast", quantity: "500g" },
-      { name: "Yogurt", quantity: "200g" },
-    ],
-    steps: ["Marinate chicken", "Grill chicken", "Prepare sauce"],
-    author: {
-      id: "a4",
-      firstName: "Priya",
-      lastName: "Patel",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
-    },
-    tags: ["Indian", "Curry", "Popular"],
-    image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600",
-    cookTime: 60,
-    likes: 6,
-    views: 3200,
-    difficulty: "hard",
-    status: "approved",
-    category: { id: "c4", name: "Indian", createdAt: "", updatedAt: "" },
-    createdAt: "2024-01-18",
-    updatedAt: "2024-01-18",
-  },
-]);
+function submitSearch() {
+  const q = search.value.trim();
+  navigateTo({ path: "/recipes", query: q ? { search: q } : {} });
+}
 
-const categories = ref<CategoryResponse[]>([
-  { id: "c1", name: "Pasta", description: "Italian pasta dishes", createdAt: "", updatedAt: "" },
-  { id: "c2", name: "Asian", description: "Asian cuisine", createdAt: "", updatedAt: "" },
-  { id: "c3", name: "American", description: "American classics", createdAt: "", updatedAt: "" },
-  { id: "c4", name: "Indian", description: "Indian dishes", createdAt: "", updatedAt: "" },
-  { id: "c5", name: "Desserts", description: "Sweet treats", createdAt: "", updatedAt: "" },
-  { id: "c6", name: "Salads", description: "Fresh and healthy", createdAt: "", updatedAt: "" },
-]);
-
-const stats = ref([
-  { label: "Recipes", value: "10,000+", icon: "i-lucide-book-open" },
-  { label: "Authors", value: "500+", icon: "i-lucide-users" },
-  { label: "Categories", value: "50+", icon: "i-lucide-layout-grid" },
-  { label: "Happy Cooks", value: "25,000+", icon: "i-lucide-smile" },
-]);
+function categoryIcon(name: string) {
+  return categoryIcons[name] ?? "i-lucide-utensils";
+}
 </script>
 
 <template>
-  <UPage>
-    <UPageSection
-      title="Discover Delicious Recipes"
-      description="Explore thousands of recipes from talented home cooks and professional chefs. Find your
-          next favorite dish today."
-      :links="[
-        {
-          label: 'Browse Recipes',
-          to: '/recipes',
-          trailingIcon: 'i-lucide-search',
-        },
-        {
-          label: 'Start Cooking',
-          to: '/auth',
-          color: 'neutral',
-          variant: 'subtle',
-          trailingIcon: 'i-lucide-chef-hat',
-        },
-      ]"
-    />
+  <div class="font-sans">
+    <section class="border-b border-default">
+      <UContainer class="py-16 sm:py-24 lg:py-32">
+        <div class="mx-auto max-w-3xl text-center space-y-8">
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-highlighted">
+            What are you cooking today?
+          </h1>
+          <p class="text-lg sm:text-xl text-muted">
+            Real recipes from people who actually cook them. Search an ingredient, pick a cuisine,
+            or browse what's popular.
+          </p>
 
-    <UContainer class="py-16 sm:py-24 lg:py-32 grid grid-cols-2 md:grid-cols-4 gap-6">
-      <UCard v-for="stat in stats" :key="stat.label" class="text-center">
-        <div class="flex flex-col items-center gap-2">
-          <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
-            <UIcon :name="stat.icon" class="size-6 text-primary" />
-          </div>
-
-          <h3 class="text-2xl font-bold">{{ stat.value }}</h3>
-          <p class="text-sm text-muted">{{ stat.label }}</p>
-        </div>
-      </UCard>
-    </UContainer>
-
-    <USeparator />
-
-    <UPageSection
-      title="Browse Categories"
-      description="Find recipes by cuisine type, dietary preferences, and meal categories"
-      :links="[
-        {
-          label: 'View All Categories',
-          to: '/categories',
-          variant: 'ghost',
-          trailingIcon: 'i-lucide-chevron-right',
-        },
-      ]"
-    >
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <NuxtLink
-          v-for="category in categories"
-          :key="category.id"
-          :to="`/recipes?category=${category.id}`"
-          class="size-full"
-        >
-          <UCard
-            class="size-full group cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+          <form
+            class="mx-auto flex w-full max-w-2xl items-center gap-2"
+            role="search"
+            @submit.prevent="submitSearch"
           >
-            <div class="flex flex-col items-center gap-3">
-              <div
-                class="size-12 bg-primary/10 p-3 rounded-full group-hover:bg-primary/20 transition-colors flex items-center justify-center"
-              >
-                <UIcon
-                  :name="
-                    categoryIcons[category.name as keyof typeof categoryIcons] ||
-                    'i-lucide-utensils'
-                  "
-                  class="size-6 text-primary"
-                />
-              </div>
+            <UInput
+              v-model="search"
+              name="search"
+              placeholder="Search recipes, ingredients, cuisines…"
+              icon="i-lucide-search"
+              size="xl"
+              class="flex-1"
+              :ui="{ base: 'w-full' }"
+            />
+            <UButton type="submit" size="xl" icon="i-lucide-arrow-right" label="Search" />
+          </form>
 
-              <h3 class="font-semibold group-hover:text-primary transition-colors">
-                {{ category.name }}
-              </h3>
-              <p class="text-xs text-muted mt-1">{{ category.description }}</p>
-            </div>
-          </UCard>
-        </NuxtLink>
-      </div>
-    </UPageSection>
-
-    <USeparator />
-
-    <UPageSection
-      title="Featured Recipes"
-      description="Hand-picked recipes from our community of talented cooks"
-      :links="[
-        {
-          label: 'Explore All Recipes',
-          to: '/recipes',
-          variant: 'ghost',
-          trailingIcon: 'i-lucide-chevron-right',
-        },
-      ]"
-    >
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <RecipeCard v-for="recipe in featuredRecipes" :key="recipe.id" :recipe="recipe" />
-      </div>
-    </UPageSection>
-
-    <UContainer class="py-16 sm:py-24 lg:py-32">
-      <UCard :ui="{ body: 'p-8 md:p-12' }">
-        <div class="text-center space-y-6">
-          <div class="size-16 mx-auto bg-white/20 rounded-full flex justify-center items-center">
-            <UIcon name="i-lucide-chef-hat" class="size-8" />
-          </div>
-          <div>
-            <h2 class="text-3xl font-bold mb-3">Share Your Culinary Creations</h2>
-            <p class="text-lg opacity-90 max-w-2xl mx-auto">
-              Join our community of food lovers and share your favorite recipes with the world.
-              Become an author and inspire others with your culinary creations.
-            </p>
-          </div>
-          <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
+          <div v-if="trendingTags.length" class="flex flex-wrap items-center justify-center gap-2">
+            <span class="text-sm text-muted">Popular:</span>
             <UButton
-              to="/auth/register"
+              v-for="tag in trendingTags"
+              :key="tag"
+              :to="{ path: '/recipes', query: { search: tag } }"
+              variant="subtle"
               color="neutral"
-              variant="solid"
-              size="lg"
-              icon="i-lucide-user-plus"
-            >
-              Become an Author
-            </UButton>
-            <UButton to="/recipes" variant="soft" size="lg" trailing-icon="i-lucide-arrow-right">
-              Browse Recipes First
-            </UButton>
+              size="sm"
+              :label="tag"
+            />
+          </div>
+
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <UButton
+              to="/recipes"
+              variant="ghost"
+              color="neutral"
+              trailing-icon="i-lucide-chevron-right"
+              label="Browse all recipes"
+            />
           </div>
         </div>
-      </UCard>
-    </UContainer>
-  </UPage>
+      </UContainer>
+    </section>
+
+    <section v-if="categories.length" class="border-b border-default">
+      <UContainer class="py-12 sm:py-16">
+        <div class="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-highlighted">Browse by cuisine</h2>
+            <p class="mt-1 text-muted">Pick a category to see what's cooking.</p>
+          </div>
+          <UButton
+            to="/categories"
+            variant="ghost"
+            color="neutral"
+            trailing-icon="i-lucide-chevron-right"
+            label="All categories"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <NuxtLink
+            v-for="category in categories"
+            :key="category.id"
+            :to="`/recipes?category=${category.id}`"
+            class="block"
+          >
+            <UCard
+              :ui="{
+                root: 'group cursor-pointer transition-all hover:ring-2 hover:ring-primary h-full',
+                body: 'p-5',
+              }"
+            >
+              <div class="flex flex-col items-center gap-3 text-center">
+                <div
+                  class="flex size-12 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20"
+                >
+                  <UIcon :name="categoryIcon(category.name)" class="size-6 text-primary" />
+                </div>
+                <h3 class="font-semibold group-hover:text-primary transition-colors">
+                  {{ category.name }}
+                </h3>
+                <p v-if="typeof category.recipeCount === 'number'" class="text-xs text-muted">
+                  {{ category.recipeCount }}
+                  {{ category.recipeCount === 1 ? "recipe" : "recipes" }}
+                </p>
+              </div>
+            </UCard>
+          </NuxtLink>
+        </div>
+      </UContainer>
+    </section>
+
+    <section v-if="popularRecipes.length" class="border-b border-default">
+      <UContainer class="py-12 sm:py-16">
+        <div class="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-highlighted">Popular right now</h2>
+            <p class="mt-1 text-muted">The recipes people are cooking the most.</p>
+          </div>
+          <UButton
+            to="/recipes"
+            variant="ghost"
+            color="neutral"
+            trailing-icon="i-lucide-chevron-right"
+            label="See all"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <RecipeCard v-for="recipe in popularRecipes" :key="recipe.id" :recipe="recipe" />
+        </div>
+      </UContainer>
+    </section>
+
+    <section v-if="hasStats">
+      <UContainer class="py-12 sm:py-16">
+        <div class="grid grid-cols-3 gap-4">
+          <div class="text-center">
+            <p class="text-2xl sm:text-3xl font-bold text-highlighted">{{ stats?.recipes }}</p>
+            <p class="mt-1 text-sm text-muted">Recipes</p>
+          </div>
+          <div class="text-center">
+            <p class="text-2xl sm:text-3xl font-bold text-highlighted">{{ stats?.categories }}</p>
+            <p class="mt-1 text-sm text-muted">Categories</p>
+          </div>
+          <div class="text-center">
+            <p class="text-2xl sm:text-3xl font-bold text-highlighted">{{ stats?.authors }}</p>
+            <p class="mt-1 text-sm text-muted">Authors</p>
+          </div>
+        </div>
+      </UContainer>
+    </section>
+  </div>
 </template>
