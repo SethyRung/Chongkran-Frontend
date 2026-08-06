@@ -6,129 +6,71 @@ interface RecipeCardProps {
 <script setup lang="ts">
 const props = defineProps<RecipeCardProps>();
 
-const router = useRouter();
-
-function navigateToRecipe() {
-  router.push(`/recipes/${props.recipe.id}`);
-}
-
-const authorName = computed(() => {
-  return props.recipe.authorName ?? "Unknown Author";
-});
-
-const authorAvatar = computed(() => {
-  return props.recipe.authorAvatar;
-});
-
-const categoryName = computed(() => {
-  if (typeof props.recipe.category === "string") {
-    return props.recipe.category;
-  }
-  return props.recipe.category?.name || "Uncategorized";
-});
-
-const difficultyColor = computed(() => {
-  switch (props.recipe.difficulty) {
-    case "easy":
-      return "success";
-    case "medium":
-      return "warning";
-    case "hard":
-      return "error";
-    default:
-      return "neutral";
-  }
-});
+const authorName = computed(() => props.recipe.authorName ?? "Unknown Author");
+const authorAvatar = computed(() => props.recipe.authorAvatar);
 
 const formatCookTime = (minutes: number) => {
-  if (minutes < 60) {
-    return `${minutes}m`;
-  }
+  if (minutes < 60) return `${minutes}m`;
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
   return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
 };
+
+const recipeHref = computed(() => `/recipes/${props.recipe.id}`);
 </script>
 
 <template>
-  <UCard
-    @click="navigateToRecipe"
-    :ui="{
-      root: 'group cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 flex flex-col',
-      body: 'flex-1',
-      footer: 'flex items-center justify-between',
-    }"
+  <NuxtLink
+    :to="recipeHref"
+    class="group flex flex-col rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-default"
+    :aria-label="`View recipe: ${recipe.title}`"
   >
-    <div class="relative aspect-4/3 overflow-hidden bg-muted">
+    <div class="relative aspect-4/3 overflow-hidden rounded-xl bg-muted">
       <img
         :src="recipe.image"
         :alt="recipe.title"
-        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        loading="lazy"
+        class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
       />
 
-      <UBadge
-        :color="difficultyColor"
-        variant="solid"
-        class="absolute left-3 top-3 capitalize"
-        size="xs"
-      >
-        {{ recipe.difficulty }}
-      </UBadge>
-
       <div
-        v-if="recipe.likes && recipe.likes > 0"
-        class="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/50 px-2 py-1 text-xs text-white backdrop-blur-sm"
+        class="absolute inset-x-3 bottom-3 flex items-center justify-between gap-2"
+        :aria-label="`Difficulty: ${recipe.difficulty}`"
       >
-        <UIcon name="i-lucide-heart" class="size-3 fill-current" />
-        <span>{{ recipe.likes }}</span>
+        <span
+          class="rounded-full bg-black/40 px-2.5 py-1 text-xs font-medium text-white capitalize backdrop-blur-sm"
+        >
+          {{ recipe.difficulty }}
+        </span>
+
+        <div
+          v-if="recipe.likes && recipe.likes > 0"
+          class="flex items-center gap-1 rounded-full bg-black/40 px-2 py-1 text-xs text-white backdrop-blur-sm"
+        >
+          <UIcon name="i-lucide-heart" class="size-3 fill-current" />
+          <span>{{ recipe.likes }}</span>
+        </div>
       </div>
     </div>
 
-    <div class="py-4">
-      <UBadge color="primary" variant="soft" size="xs" class="mb-2">
-        {{ categoryName }}
-      </UBadge>
-
-      <h3 class="mb-2 line-clamp-2 text-lg font-semibold text-default group-hover:text-primary">
+    <div class="flex flex-1 flex-col gap-2 pt-4">
+      <h3
+        class="line-clamp-2 text-lg font-semibold leading-snug text-highlighted transition-colors group-hover:text-primary"
+      >
         {{ recipe.title }}
       </h3>
 
-      <p class="mb-3 line-clamp-2 text-sm text-muted">
+      <p v-if="recipe.description" class="line-clamp-2 text-sm leading-relaxed text-muted">
         {{ recipe.description }}
       </p>
 
-      <div v-if="recipe.tags.length > 0" class="mb-3 flex flex-wrap gap-1">
-        <UBadge
-          v-for="tag in recipe.tags.slice(0, 3)"
-          :key="tag"
-          variant="outline"
-          size="xs"
-          color="neutral"
-        >
-          {{ tag }}
-        </UBadge>
-        <UBadge v-if="recipe.tags.length > 3" variant="outline" size="xs" color="neutral">
-          +{{ recipe.tags.length - 3 }}
-        </UBadge>
+      <div class="mt-auto flex items-center gap-2 pt-2 text-sm text-muted">
+        <UAvatar :src="authorAvatar" :alt="authorName" size="2xs" />
+        <span class="truncate">{{ authorName }}</span>
+        <span aria-hidden="true" class="text-default/30">·</span>
+        <UIcon name="i-lucide-clock" class="size-3.5 shrink-0" />
+        <span>{{ formatCookTime(recipe.cookTime) }}</span>
       </div>
     </div>
-
-    <template #footer>
-      <div class="flex items-center gap-2">
-        <UAvatar :src="authorAvatar" :alt="authorName" size="xs" />
-        <span class="text-xs text-muted">{{ authorName }}</span>
-      </div>
-
-      <div class="flex items-center gap-3 text-xs text-muted">
-        <div class="flex items-center gap-1">
-          <UIcon name="i-lucide-clock" class="size-3.5" />
-          <span>{{ formatCookTime(recipe.cookTime) }}</span>
-        </div>
-        <div class="flex items-center gap-1">
-          <UIcon name="i-lucide-eye" class="size-3.5" />
-          <span>{{ recipe.views }}</span>
-        </div>
-      </div>
-    </template>
-  </UCard>
+  </NuxtLink>
 </template>
