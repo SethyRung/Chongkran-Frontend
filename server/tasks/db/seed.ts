@@ -314,7 +314,8 @@ const RECIPE_SEEDS: RecipeSeed[] = [
   {
     slug: "avocado-toast",
     title: "Smashed Avocado Toast",
-    description: "Sourdough, ripe avocado, lemon, flaky salt. Sometimes the simplest thing is the right thing.",
+    description:
+      "Sourdough, ripe avocado, lemon, flaky salt. Sometimes the simplest thing is the right thing.",
     ingredients: [
       { name: "Sourdough bread", quantity: "2 thick slices" },
       { name: "Ripe avocado", quantity: "1" },
@@ -381,9 +382,7 @@ export default defineTask({
       await seedUser(DEMO_ADMIN);
       await seedUser({ ...DEMO_AUTHOR, role: "author" });
 
-      const authors = await Promise.all(
-        AUTHOR_SEEDS.map(async (a) => seedAuthorAccount(a)),
-      );
+      const authors = await Promise.all(AUTHOR_SEEDS.map(async (a) => seedAuthorAccount(a)));
       const allAuthors = [DEMO_AUTHOR, ...authors].filter(Boolean);
 
       await seedCategories();
@@ -577,9 +576,7 @@ async function seedRecipes(
         .onConflictDoNothing();
     }
 
-    console.log(
-      `Created recipe: ${seed.title} (views=${seed.views}, likes=${likeCount})`,
-    );
+    console.log(`Created recipe: ${seed.title} (views=${seed.views}, likes=${likeCount})`);
   }
 
   void authors;
@@ -591,9 +588,7 @@ async function cleanupRetiredRecipes(): Promise<void> {
     .select({ id: recipes.id })
     .from(recipes)
     .where(sql`${recipes.id} LIKE 'recipe-%'`);
-  const retired = seeded
-    .map((r) => r.id)
-    .filter((id) => !activeSlugs.has(id));
+  const retired = seeded.map((r) => r.id).filter((id) => !activeSlugs.has(id));
   if (retired.length === 0) return;
 
   await db.delete(recipeLikes).where(inArray(recipeLikes.recipeId, retired));

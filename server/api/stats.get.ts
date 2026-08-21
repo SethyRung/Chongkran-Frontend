@@ -11,10 +11,7 @@ export type StatsResponse = {
 export default defineEventHandler(async (): Promise<ApiResponse<StatsResponse>> => {
   const [recipesRow, categoriesRow, authorsRow] = await Promise.all([
     db.select({ value: count() }).from(recipes).where(eq(recipes.status, "approved")),
-    db
-      .select({ value: count() })
-      .from(categories)
-      .where(eq(categories.isDeleted, false)),
+    db.select({ value: count() }).from(categories).where(eq(categories.isDeleted, false)),
     db
       .select({ value: count() })
       .from(user)

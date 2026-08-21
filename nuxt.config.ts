@@ -39,11 +39,9 @@ export default defineNuxtConfig({
       driver: process.env.DATABASE_DRIVER as any,
       casing: "snake_case",
     },
-    kv: true,
   },
 
   auth: {
-    hubSecondaryStorage: true,
     schema: {
       casing: "snake_case",
     },
@@ -53,7 +51,6 @@ export default defineNuxtConfig({
       authenticated: "/",
       logout: "/auth/login",
     },
-    preserveRedirect: true,
   },
 
   routeRules: {

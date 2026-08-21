@@ -1,6 +1,6 @@
 # Chongkran
 
-Full-stack recipe web app. Single Nuxt 4 deploy — Nitro server routes + Vue client, backed by Postgres (Drizzle), Redis (Better-Auth secondary storage), Vercel Blob, and Resend.
+Full-stack recipe web app. Single Nuxt 4 deploy — Nitro server routes + Vue client, backed by Postgres (Drizzle), Vercel Blob, and Resend. KV/Redis is disabled; Better-Auth sessions are Postgres-only.
 
 ## Commands
 
@@ -18,13 +18,13 @@ Full-stack recipe web app. Single Nuxt 4 deploy — Nitro server routes + Vue cl
 | `bunx nuxt db generate`                      | Regenerate Drizzle migration from `server/db/schema.ts` (NuxtHub writes to `server/db/migrations/postgresql/`). **Never hand-roll migrations.** |
 | `bunx nuxt db migrate`                       | Apply pending migrations                                                                                                                        |
 | `bun hub:task db:seed`                       | Run the seed task (creates `admin@chongkran.com` / `Password123!`)                                                                              |
-| `bun docker-compose up -d`                   | Start Postgres + Redis                                                                                                                          |
+| `bun docker-compose up -d`                   | Start Postgres                                                                                                                                  |
 
 ## Architecture
 
 - **Single-tier Nitro server**: `server/api/<module>/<route>.{get,post,put,patch,delete}.ts` talks directly to Drizzle/Postgres. There is no BFF proxy layer. Better-Auth auto-mounts `/api/auth/*`.
 - **Better-Auth** config: `server/auth.config.ts` (defineServerAuth) and `app/auth.config.ts` (defineClientAuth with `adminClient()`). Auto-imports: `requireUserSession(event)`, `requireAdmin(event)`, `requireRole(event, role[])`, `refreshSessionCookieCache(event)` (server); `useUserSession()` (client).
-- **Sessions** in Postgres `session` table with Redis secondary storage (`auth.hubSecondaryStorage: true`).
+- **Sessions** in Postgres `session` table — no secondary storage (`hub.kv` and `auth.hubSecondaryStorage` are both off).
 - **Route protection** is declarative in `nuxt.config.ts → routeRules`:
   - `/admin/**` → admin only; `/profile/**`, `/meal-plans/**`, `/shopping-lists/**` → auth required; `/auth` → guest only.
   - `app/middleware/auth.global.ts` is the public-route allow-list (`/`, `/recipes/*`, `/categories/*`) since `routeRules` has no "public" mode.
@@ -64,7 +64,7 @@ Full-stack recipe web app. Single Nuxt 4 deploy — Nitro server routes + Vue cl
 - **3 Vitest projects** (`vitest.config.ts`): `unit` (`test/unit/`, node env), `e2e` (`test/e2e/`, currently empty), `nuxt` (`test/nuxt/`, full Nuxt runtime via `@nuxt/test-utils/e2e`).
 - **`.env.test`** is committed with placeholder secrets (Better-Auth + NuxtHub read it on Nuxt boot).
 - **`bun:test` stub** (`test/stubs/bun-test.ts` aliased via `vitest.config.ts → resolve.alias`) — Vite tries to bundle `bun:test` when `process.versions.bun` is set; the stub makes it resolvable under Node. Don't delete.
-- **`bun test:nuxt`** must serialize (`--no-file-parallelism` is in the npm script): each test file spins up its own Nitro server on port 3000; parallel runs collide on the port.
+- **`bun test:nuxt`** must serialize: each test file calls `await setup({...})` which spins up its own Nitro server on port 3000. The npm script does NOT pass `--no-file-parallelism` and `vitest.config.ts` does not disable file parallelism, so pass it explicitly (`bun test:nuxt -- --no-file-parallelism`) or expect port collisions when multiple files run in parallel.
 - Test workflow: `bun test:unit` before pushing (fast), `bun test:nuxt` before opening a PR (slow).
 
 ## Git

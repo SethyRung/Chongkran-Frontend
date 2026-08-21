@@ -32,7 +32,9 @@ export default defineEventHandler(async (event): Promise<ApiResponse<RecipeRespo
     .where(eq(recipes.status, "approved"))
     .orderBy(
       desc(recipes.views),
-      desc(sql`(SELECT COUNT(*) FROM ${recipeLikes} WHERE ${recipeLikes.recipeId} = ${recipes.id})`),
+      desc(
+        sql`(SELECT COUNT(*) FROM ${recipeLikes} WHERE ${recipeLikes.recipeId} = ${recipes.id})`,
+      ),
       desc(recipes.createdAt),
     )
     .limit(limit);

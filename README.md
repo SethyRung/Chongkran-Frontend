@@ -4,7 +4,7 @@ A recipe web application for browsing, creating, and sharing recipes. Built as a
 
 ## Features
 
-- Home page with featured and popular recipes
+- Home page with featured and popular recipes, plus live counts (recipes, categories, authors)
 - Search and filtering by recipe name, category, and ingredients
 - Detailed recipe pages with steps, ingredients, and reviews
 - Authenticated recipe authoring, editing, and deletion
@@ -28,7 +28,7 @@ A recipe web application for browsing, creating, and sharing recipes. Built as a
 | Database        | Postgres 18 via NuxtHub                                            |
 | ORM             | Drizzle ORM (schema-first; migrations via `bunx nuxt db generate`) |
 | Auth            | Better-Auth with email verification + admin plugin                 |
-| Session storage | Redis 8 (secondary storage for fast lookup)                        |
+| Session storage | Postgres `session` table (Better-Auth)                             |
 | File uploads    | Vercel Blob                                                        |
 | Email           | Resend (verification + password reset)                             |
 | Deployment      | Vercel                                                             |
@@ -38,7 +38,7 @@ A recipe web application for browsing, creating, and sharing recipes. Built as a
 ### Prerequisites
 
 - [Bun](https://bun.sh) 1.1 or later (primary package manager)
-- Docker and Docker Compose (for local Postgres + Redis)
+- Docker and Docker Compose (for local Postgres)
 - A Vercel account (only required for blob uploads in production; locally any token works)
 
 ### Steps
@@ -70,7 +70,7 @@ A recipe web application for browsing, creating, and sharing recipes. Built as a
    bun docker-compose up -d
    ```
 
-   This brings up Postgres 18 (port 5432) and Redis 8 (port 6379) using the credentials from `.env`.
+   This brings up Postgres 18 (port 5432) using the credentials from `.env`.
 
 5. Apply database migrations:
 
@@ -142,7 +142,7 @@ A recipe web application for browsing, creating, and sharing recipes. Built as a
 
 | Command                    | Description                           |
 | -------------------------- | ------------------------------------- |
-| `bun docker-compose up -d` | Start Postgres + Redis                |
+| `bun docker-compose up -d` | Start Postgres                        |
 | `bun docker-compose down`  | Stop them (add `-v` to clear volumes) |
 
 ## Project Structure
@@ -163,7 +163,7 @@ chongkran/
     auth.config.ts            Better-Auth server config (defineServerAuth)
     api/                      Nitro endpoints (replaces NestJS controllers)
       categories/             CRUD
-      recipes/                CRUD + engagement + author views (14 handlers)
+      recipes/                CRUD + engagement + author views + popular (15 handlers)
       reviews/                CRUD + admin global (6 handlers)
       favorites/              CRUD + check (4 handlers)
       follows/                follow/unfollow + lists + stats (6 handlers)
@@ -172,6 +172,7 @@ chongkran/
       shopping-lists/         One list per user (4 handlers)
       upload/                 Vercel Blob upload
       admin/                  stats.get.ts
+      stats.get.ts            Public homepage counts (recipes, categories, authors)
     db/
       schema.ts               Drizzle schema (single source of truth)
       migrations/postgresql/  Auto-generated migrations
@@ -183,7 +184,7 @@ chongkran/
   docs/PORT_PLAN.md           Phase-by-phase port plan (gitignored)
   public/                     Static assets + Geist fonts
   nuxt.config.ts              Nuxt configuration
-  docker-compose.yml          Postgres + Redis only
+  docker-compose.yml          Postgres only
   vitest.config.ts            3 projects: unit / e2e / nuxt
   .env.test                   Test-only env defaults (committed)
 ```
@@ -192,7 +193,7 @@ chongkran/
 
 - **Better-Auth** replaces the previous JWT proxy layer.
 - **Email verification** is required before sign-in is allowed (MVP gate).
-- **Sessions** are stored in the Postgres `session` table with Redis as secondary storage (`auth.hubSecondaryStorage: true`) for fast lookup.
+- **Sessions** are stored in the Postgres `session` table; Better-Auth reads them directly with no secondary storage.
 - **Roles** are stored as a `role` text column on `user` (`'user' | 'author' | 'admin'`).
 - **Route protection** is declarative in `nuxt.config.ts → routeRules`:
 
@@ -244,7 +245,6 @@ This runs migrations against the production database, then builds the Nuxt app. 
 | `NUXT_RESEND_API_KEY`     | Resend API key (verified domain required)         |
 | `NUXT_RESEND_FROM_EMAIL`  | `Chongkran <noreply@your-domain.com>`             |
 | `BLOB_READ_WRITE_TOKEN`   | Vercel Blob token                                 |
-| `REDIS_URL`               | Upstash Redis connection string                   |
 
 ## License
 
