@@ -36,10 +36,7 @@ const doughnutOptions = (): ChartOptions => ({
 });
 
 function dailySeriesToChartData(users: AdminDailyCount[], recipes: AdminDailyCount[]) {
-  const labels = users.map((d) => {
-    const date = new Date(d.date);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  });
+  const labels = users.map((d) => formatMonthDay(d.date));
 
   return {
     labels,
@@ -63,10 +60,7 @@ function dailySeriesToChartData(users: AdminDailyCount[], recipes: AdminDailyCou
 }
 
 function singleSeriesToChartData(series: AdminDailyCount[]) {
-  const labels = series.map((d) => {
-    const date = new Date(d.date);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  });
+  const labels = series.map((d) => formatMonthDay(d.date));
 
   return {
     labels,

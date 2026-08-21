@@ -29,6 +29,7 @@
     "@vueuse/nuxt": "^14.3.0",
     "better-auth": "^1.6.25",
     "chart.js": "^4.5.1",
+    "dayjs": "^1.11.23",
     "drizzle-orm": "^0.45.2",
     "drizzle-zod": "^0.8.3",
     "nuxt": "^4.5.0",

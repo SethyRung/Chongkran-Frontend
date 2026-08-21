@@ -53,15 +53,6 @@ function statusColor(s?: string) {
   return "warning";
 }
 
-function formatDate(dateStr?: Date | string) {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
 const UBadge = resolveComponent("UBadge");
 const UButton = resolveComponent("UButton");
 const UAvatar = resolveComponent("UAvatar");

@@ -85,15 +85,6 @@ const total = computed(() =>
 );
 const reviews = computed(() => reviewsData.value?.data ?? []);
 
-function formatDate(dateStr?: string) {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
 function resolveUserName(review: ReviewResponse) {
   if (review.userName) return review.userName;
   if (review.user) {

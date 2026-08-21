@@ -129,15 +129,6 @@ function roleColor(role: string) {
   return "neutral";
 }
 
-function formatDate(dateStr?: Date | string) {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
 function renderFollowCount(userId: string, key: "followersCount" | "followingCount") {
   if (followStatsLoading[userId]) {
     return h(UIcon, { name: "i-lucide:loader-circle", class: "size-4 text-muted animate-spin" });
@@ -197,9 +188,7 @@ function openEditModal(user: UserResponse) {
   state.lastName = user.lastName;
   state.email = user.email;
   state.gender = user.gender ?? "";
-  state.dateOfBirth = user.dateOfBirth
-    ? new Date(user.dateOfBirth).toISOString().split("T")[0]
-    : "";
+  state.dateOfBirth = toDateInput(user.dateOfBirth);
   editModal.value = true;
 }
 

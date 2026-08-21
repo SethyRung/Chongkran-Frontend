@@ -25,13 +25,7 @@ const groupedRecipes = computed(() => {
 
 const recipeCount = computed(() => props.mealPlan.recipes.length);
 
-const formattedDate = computed(() => {
-  return new Date(props.mealPlan.createdAt).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-});
+const formattedDate = computed(() => formatDate(props.mealPlan.createdAt));
 
 function navigateToDetail() {
   router.push(`/meal-plans/${props.mealPlan.id}`);

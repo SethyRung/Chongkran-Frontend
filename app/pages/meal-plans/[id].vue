@@ -43,14 +43,7 @@ const mealTypeIcons: Record<string, string> = {
   snack: "i-lucide:cookie",
 };
 
-const formattedDate = computed(() => {
-  if (!data.value) return "";
-  return new Date(data.value.createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-});
+const formattedDate = computed(() => formatDateLong(data.value?.createdAt));
 
 function getEntriesForDay(day: string) {
   return enrichedRecipes.value.filter((r) => r.day === day);

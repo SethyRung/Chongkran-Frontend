@@ -62,14 +62,7 @@ const formattedCookTime = computed(() => {
     : `${hours} hour${hours > 1 ? "s" : ""}`;
 });
 
-const formattedDate = computed(() => {
-  if (!recipe.value) return "";
-  return new Date(recipe.value.createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-});
+const formattedDate = computed(() => formatDateLong(recipe.value?.createdAt));
 
 const isLiked = computed(() => {
   if (!user.value || !recipe.value) return false;
